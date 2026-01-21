@@ -56,24 +56,6 @@
     <script type="text/babel">
         const { useState, useEffect, useMemo, useRef } = React;
 
-        // --- UTILITIES ---
-        // Levenshtein distance for typo correction
-        const getLevenshteinDistance = (a, b) => {
-            const matrix = [];
-            for (let i = 0; i <= b.length; i++) { matrix[i] = [i]; }
-            for (let j = 0; j <= a.length; j++) { matrix[0][j] = j; }
-            for (let i = 1; i <= b.length; i++) {
-                for (let j = 1; j <= a.length; j++) {
-                    if (b.charAt(i - 1) === a.charAt(j - 1)) {
-                        matrix[i][j] = matrix[i - 1][j - 1];
-                    } else {
-                        matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
-                    }
-                }
-            }
-            return matrix[b.length][a.length];
-        };
-
         // --- INLINE ICONS (Replaces Lucide Dependency) ---
         const Icon = ({ children, size = 24, className = "" }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{children}</svg>
@@ -96,9 +78,265 @@
         
         // --- END ICONS ---
 
-        /* --- DATA CONSTANTS --- */
-        
+        // --- DATA CONSTANTS ---
         const REGIONS = ['Kanto', 'Hoenn', 'Sinnoh', 'Unova', 'Johto'];
+
+        const STORY_CHECKLISTS = {
+            Kanto: [
+                "Pick Starter (Pallet Town)",
+                "Deliver Oak's Parcel (Viridian Mart -> Pallet Lab)",
+                "Rival Battle (Route 22 - Optional)",
+                "Traverse Viridian Forest",
+                "Defeat Brock (Pewter Gym)",
+                "Obtain Running Shoes (Pewter City Exit)",
+                "Traverse Mt. Moon (Select Dome/Helix Fossil)",
+                "Defeat Misty (Cerulean Gym)",
+                "Defeat Rival (Nugget Bridge)",
+                "Help Bill (Route 25 - Obtain S.S. Ticket)",
+                "Obtain Dig (Cerulean House)",
+                "Board S.S. Anne (Vermilion City)",
+                "Obtain HM01 Cut (Captain of S.S. Anne)",
+                "Defeat Lt. Surge (Vermilion Gym)",
+                "Obtain HM05 Flash (Route 2 - Requires 10 Pokemon in Dex)",
+                "Traverse Rock Tunnel (Lavender Town)",
+                "Rescue Mr. Fuji (Pokemon Tower - Requires Silph Scope later)",
+                "Go to Celadon City (Underground Path)",
+                "Obtain Eevee (Celadon Mansion - Back Entrance)",
+                "Clear Rocket Game Corner (Obtain Silph Scope)",
+                "Defeat Erika (Celadon Gym)",
+                "Obtain Tea (Celadon Mansion - Front)",
+                "Return to Lavender Town",
+                "Clear Pokemon Tower (Obtain Poke Flute)",
+                "Wake Snorlax (Route 12 or 16 - Capture Opportunity)",
+                "Obtain HM02 Fly (Route 16 - Cut Tree)",
+                "Obtain Super Rod (Route 12)",
+                "Traverse Safari Zone (Fuchsia City)",
+                "Obtain HM03 Surf (Safari Zone - Secret House)",
+                "Obtain Gold Teeth (Safari Zone)",
+                "Obtain HM04 Strength (Warden's House - Trade Teeth)",
+                "Defeat Koga (Fuchsia Gym)",
+                "Defeat Team Rocket at Silph Co. (Saffron City)",
+                "Obtain Lapras (Silph Co. 7F)",
+                "Obtain Master Ball (Silph Co. President)",
+                "Defeat Sabrina (Saffron Gym)",
+                "Obtain Hitmonlee or Hitmonchan (Saffron Dojo)",
+                "Surf to Cinnabar Island (from Pallet or Fuchsia)",
+                "Find Secret Key (Pokemon Mansion)",
+                "Defeat Blaine (Cinnabar Gym)",
+                "Bill's Quest - Sevii Islands (Cinnabar Center)",
+                "Rescue Lostelle (Three Island - Berry Forest)",
+                "Defeat Giovanni (Viridian Gym)",
+                "Defeat Rival (Route 22)",
+                "Traverse Victory Road",
+                "Capture Moltres (Victory Road - Optional)",
+                "Defeat Elite Four & Champion"
+            ],
+            Hoenn: [
+                "Set Clock (Littleroot Town)",
+                "Save Prof. Birch (Route 101 - Pick Starter)",
+                "Defeat Rival (Route 103)",
+                "Obtain Pokedex (Littleroot Lab)",
+                "Meet Dad (Petalburg Gym)",
+                "Help Wally (Route 102)",
+                "Defeat Roxanne (Rustboro Gym)",
+                "Obtain HM01 Cut (Rustboro Cutter's House)",
+                "Rescue Peeko (Rusturf Tunnel)",
+                "Obtain PokeNav (Devon Corp)",
+                "Take Boat to Dewford Town",
+                "Obtain Old Rod (Dewford)",
+                "Deliver Letter to Steven (Granite Cave)",
+                "Defeat Brawly (Dewford Gym)",
+                "Take Boat to Slateport City",
+                "Deliver Devon Goods (Oceanic Museum - Team Magma/Aqua)",
+                "Rival Battle (Route 110)",
+                "Obtain Itemfinder (Rival)",
+                "Defeat Wattson (Mauville Gym)",
+                "Obtain HM06 Rock Smash (Mauville)",
+                "Obtain Bicycle (Mauville Bike Shop)",
+                "Clear Rusturf Tunnel (Rock Smash - Optional)",
+                "Traverse Mt. Chimney (Defeat Team Magma/Aqua)",
+                "Defeat Flannery (Lavaridge Gym)",
+                "Obtain Go-Goggles (Rival - Lavaridge Exit)",
+                "Defeat Norman (Petalburg Gym)",
+                "Obtain HM03 Surf (Wally's House)",
+                "Visit Abandoned Ship (Optional - Ice Beam)",
+                "Clear Weather Institute (Route 119)",
+                "Obtain Castform (Weather Institute)",
+                "Rival Battle (Route 119)",
+                "Obtain HM02 Fly (Rival)",
+                "Obtain Devon Scope (Route 120 - Steven)",
+                "Defeat Winona (Fortree Gym)",
+                "Traverse Route 120 (Regi puzzle items optional)",
+                "Team Magma/Aqua at Mt. Pyre (Obtain Magma Emblem?)",
+                "Clear Magma Hideout (Jagged Pass)",
+                "Clear Aqua Hideout (Lilycove City)",
+                "Obtain Master Ball (Aqua Hideout)",
+                "Rival Battle (Lilycove Dept Store)",
+                "Defeat Tate & Liza (Mossdeep Gym)",
+                "Clear Space Center (Team Magma)",
+                "Obtain HM08 Dive (Steven's House)",
+                "Find Seafloor Cavern (Dive on Route 128)",
+                "Defeat Archie/Maxie (Seafloor Cavern)",
+                "Confront Groudon/Kyogre (Cave of Origin)",
+                "Defeat Juan (Sootopolis Gym)",
+                "Obtain HM07 Waterfall (Wallace)",
+                "Traverse Victory Road",
+                "Defeat Elite Four & Champion",
+                "Obtain Beldum (Steven's House - Post Game)"
+            ],
+            Sinnoh: [
+                "Watch TV (Twinleaf Town)",
+                "Visit Lake Verity (Get Starter)",
+                "Obtain Pokedex (Sandgem Town)",
+                "Visit Jubilife City (Obtain Poketch)",
+                "Rival Battle (Route 203)",
+                "Obtain HM06 Rock Smash (Oreburgh Gate)",
+                "Defeat Roark (Oreburgh Gym)",
+                "Defeat Team Galactic (Valley Windworks)",
+                "Traverse Eterna Forest (with Cheryl)",
+                "Defeat Gardenia (Eterna Gym)",
+                "Clear Galactic Building (Eterna - Obtain Bicycle)",
+                "Obtain HM01 Cut (Cynthia - Eterna)",
+                "Obtain Togepi Egg (Cynthia)",
+                "Traverse Mt. Coronet (Route 207 to 208)",
+                "Visit Hearthome City (Contest Hall)",
+                "Rival Battle (Hearthome)",
+                "Defeat Fantina (Hearthome Gym)",
+                "Visit Solaceon Town (Ruins - Optional)",
+                "Obtain HM02 Fly (Galactic Warehouse - Veilstone)",
+                "Defeat Maylene (Veilstone Gym)",
+                "Recover Pokedex (Veilstone - Team Galactic)",
+                "Defeat Crasher Wake (Pastoria Gym)",
+                "Chase Galactic Grunt (Pastoria -> Valor Lakefront)",
+                "Obtain SecretPotion (Cynthia)",
+                "Cure Psyducks (Route 210)",
+                "Deliver Old Charm (Celestic Town)",
+                "Obtain HM03 Surf (Cynthia's Grandmother)",
+                "Defeat Byron (Canalave Gym)",
+                "Visit Library (Canalave)",
+                "Obtain HM04 Strength (Iron Island - Riley)",
+                "Obtain Riolu Egg (Iron Island - Optional)",
+                "Investigate Lake Valor (Explosion)",
+                "Investigate Lake Verity (Mars)",
+                "Traverse Mt. Coronet (Route 211 to 216)",
+                "Obtain HM08 Rock Climb (Route 217)",
+                "Defeat Candice (Snowpoint Gym)",
+                "Investigate Lake Acuity (Jupiter)",
+                "Storm Galactic HQ (Veilstone)",
+                "Release Lake Guardians",
+                "Climb Mt. Coronet (Spear Pillar)",
+                "Enter Distortion World",
+                "Defeat Cyrus",
+                "Capture/Defeat Giratina",
+                "Defeat Volkner (Sunyshore Gym)",
+                "Obtain HM07 Waterfall (Jasmine)",
+                "Traverse Victory Road",
+                "Defeat Elite Four & Champion"
+            ],
+            Unova: [
+                 "Pick Starter (Nuvema Town)",
+                 "Rival Battles (Bianca & Cheren)",
+                 "Visit Accumula Town (Team Plasma Speech)",
+                 "Battle N (Accumula)",
+                 "Visit Striaton City (Dreamyard)",
+                 "Obtain Elemental Monkey (Dreamyard)",
+                 "Defeat Cilan/Chili/Cress (Striaton Gym)",
+                 "Obtain HM01 Cut (Fennel)",
+                 "Defeat Team Plasma (Dreamyard)",
+                 "Visit Nacrene City",
+                 "Defeat Lenora (Nacrene Gym)",
+                 "Recover Dragon Skull (Pinwheel Forest)",
+                 "Cross Skyarrow Bridge",
+                 "Visit Castelia City",
+                 "Clear Team Plasma (Prime Pier / Gym Street)",
+                 "Defeat Burgh (Castelia Gym)",
+                 "Rival Battle (Route 4)",
+                 "Visit Nimbasa City",
+                 "Defeat N (Ferris Wheel)",
+                 "Defeat Elesa (Nimbasa Gym)",
+                 "Obtain HM04 Strength (Nimbasa NW House)",
+                 "Cross Driftveil Drawbridge",
+                 "Defeat Clay (Driftveil Gym)",
+                 "Clear Cold Storage (Team Plasma)",
+                 "Traverse Chargestone Cave",
+                 "Defeat Skyla (Mistralton Gym)",
+                 "Obtain HM02 Fly (Prof. Juniper - Route 7)",
+                 "Traverse Celestial Tower",
+                 "Traverse Twist Mountain",
+                 "Visit Icirrus City",
+                 "Defeat Brycen (Icirrus Gym)",
+                 "Dragonspiral Tower (Team Plasma)",
+                 "Relic Castle (Desert Resort - Retrieve Stone)",
+                 "Visit Opelucid City",
+                 "Defeat Drayden/Iris (Opelucid Gym)",
+                 "Obtain Master Ball (Prof. Juniper)",
+                 "Traverse Victory Road",
+                 "Defeat Elite Four",
+                 "N's Castle (Rise from League)",
+                 "Capture Reshiram/Zekrom",
+                 "Defeat N",
+                 "Defeat Ghetsis"
+            ],
+            Johto: [
+                "Pick Starter (New Bark Town)",
+                "Visit Mr. Pokemon (Route 30 - Get Mystery Egg)",
+                "Battle Rival (Passerby Boy)",
+                "Deliver Egg to Elm (New Bark)",
+                "Traverse Dark Cave (Optional)",
+                "Clear Sprout Tower (Violet City)",
+                "Defeat Falkner (Violet Gym)",
+                "Obtain Togepi Egg (Elm's Aide - Violet Mart)",
+                "Obtain HM06 Rock Smash (Route 36)",
+                "Traverse Union Cave",
+                "Clear Slowpoke Well (Azalea Town - Team Rocket)",
+                "Defeat Bugsy (Azalea Gym)",
+                "Battle Rival (Azalea Exit)",
+                "Chase Farfetch'd (Ilex Forest)",
+                "Obtain HM01 Cut (Ilex Forest)",
+                "Obtain Headbutt (Ilex Forest Move Tutor)",
+                "Visit Goldenrod City",
+                "Obtain Bicycle (Bike Shop)",
+                "Obtain Radio Card (Radio Tower Quiz)",
+                "Defeat Whitney (Goldenrod Gym)",
+                "Obtain Squirtbottle (Flower Shop)",
+                "Wake Sudowoodo (Route 36)",
+                "Visit Ecruteak City",
+                "Meet Bill (Pokemon Center - Returns to Goldenrod)",
+                "Obtain Eevee (Bill's House - Goldenrod)",
+                "Burned Tower (Rival & Legendary Beasts)",
+                "Defeat Morty (Ecruteak Gym)",
+                "Defeat Kimono Girls (Dance Theater)",
+                "Obtain HM03 Surf (Dance Theater)",
+                "Visit Olivine City (Lighthouse)",
+                "Obtain HM04 Strength (Olivine Cafe)",
+                "Cross Sea to Cianwood City",
+                "Defeat Chuck (Cianwood Gym)",
+                "Obtain HM02 Fly (Chuck's Wife)",
+                "Obtain SecretPotion (Cianwood Pharmacy)",
+                "Obtain Shuckle (Cianwood House - Optional)",
+                "Return to Olivine (Heal Amphy)",
+                "Defeat Jasmine (Olivine Gym)",
+                "Visit Mahogany Town",
+                "Visit Lake of Rage (Capture Red Gyarados)",
+                "Meet Lance (Lake of Rage)",
+                "Clear Team Rocket HQ (Mahogany)",
+                "Defeat Pryce (Mahogany Gym)",
+                "Radio Tower Takeover (Goldenrod City)",
+                "Obtain Basement Key (Fake Director)",
+                "Rescue Real Director (Underground)",
+                "Defeat Rocket Executives (Radio Tower)",
+                "Obtain Rainbow/Silver Wing (Director)",
+                "Traverse Ice Path",
+                "Defeat Clair (Blackthorn Gym)",
+                "Dragon's Den Quiz (Obtain Dratini)",
+                "Obtain Rising Badge",
+                "Receive Master Ball (Prof Elm)",
+                "Capture Lugia/Ho-Oh (Whirl Is. / Bell Tower)",
+                "Obtain HM07 Waterfall (Ice Path / Route 44)",
+                "Traverse Victory Road",
+                "Defeat Elite Four & Champion"
+            ]
+        };
         
         const TYPE_WEAKNESS = {
             normal: ['fighting'],
@@ -400,31 +638,66 @@
                  },
             ],
             Johto: [
-                "Defeat Falkner (Violet Gym)",
-                "Obtain HM06 Rock Smash (Route 36)",
-                "Obtain Togepi Egg (Violet)",
-                "Defeat Bugsy (Azalea Gym)",
-                "Obtain HM01 Cut (Ilex Forest)",
-                "Clear Slowpoke Well",
-                "Defeat Whitney (Goldenrod Gym)",
-                "Obtain Squirtbottle (Goldenrod)",
-                "Obtain Eevee (Bill - Goldenrod)",
-                "Defeat Morty (Ecruteak Gym)",
-                "Obtain HM03 Surf (Ecruteak Theater)",
-                "Defeat Chuck (Cianwood Gym)",
-                "Obtain HM02 Fly (Cianwood)",
-                "Obtain SecretPotion (Cianwood)",
-                "Defeat Jasmine (Olivine Gym)",
-                "Defeat Pryce (Mahogany Gym)",
-                "Clear Lake of Rage (Capture Red Gyarados)",
-                "Clear Radio Tower (Team Rocket)",
-                "Defeat Clair (Blackthorn Gym)",
-                "Clear Dragon's Den (Obtain Dratini)",
-                "Obtain HM07 Waterfall (Ice Path)",
-                "Capture Ho-Oh/Lugia (Version Dependent)",
-                "Obtain Master Ball (Prof Elm)",
-                "Clear Victory Road",
-                "Defeat Elite Four"
+                { 
+                    name: "Falkner", type: "Flying", badge: "Zephyr", cap: 20, team: ["Pidgey", "Pidgeotto"],
+                    strategy: "Pidgeotto has Roost. Geodude (Rock Throw) or Mareep (Thundershock) are best.",
+                    recommended: ["Geodude", "Mareep", "Onix"]
+                },
+                { 
+                    name: "Bugsy", type: "Bug", badge: "Hive", cap: 24, team: ["Metapod", "Kakuna", "Scyther"],
+                    strategy: "Scyther uses U-Turn and hits hard. Geodude (Rock) resists Normal/Flying and hits 4x effective.",
+                    recommended: ["Geodude", "Quilava", "Gastly", "Flaaffy"]
+                },
+                { 
+                    name: "Whitney", type: "Normal", badge: "Plain", cap: 29, team: ["Clefairy", "Miltank"],
+                    strategy: "The infamous Miltank (Rollout/Attract/Milk Drink). Use Female Geodude/Onix or Machop.",
+                    recommended: ["Machop", "Geodude (Female)", "Heracross", "Croconaw"]
+                },
+                { 
+                    name: "Morty", type: "Ghost", badge: "Fog", cap: 37, team: ["Gastly", "Haunter", "Haunter", "Gengar"],
+                    strategy: "Hypnosis/Dream Eater combo. Normal types (Raticate/Tauros) are immune to Shadow Ball. Use Bite/Crunch.",
+                    recommended: ["Raticate (Crunch)", "Gyarados (Bite)", "Umbreon", "Girafarig"]
+                },
+                { 
+                    name: "Chuck", type: "Fighting", badge: "Storm", cap: 41, team: ["Primeape", "Poliwrath"],
+                    strategy: "Poliwrath uses Focus Punch (Sleep needed). Use Flying or Psychic. Hypno is tanky enough.",
+                    recommended: ["Hypno", "Pidgeot", "Ampharos (for Poliwrath)", "Alakazam"]
+                },
+                { 
+                    name: "Jasmine", type: "Steel", badge: "Mineral", cap: 43, team: ["Magnemite", "Magnemite", "Steelix"],
+                    strategy: "Steelix has huge Defense. Use Special Fire (Typhlosion) or Water (Feraligatr) moves.",
+                    recommended: ["Typhlosion", "Feraligatr", "Quagsire", "Arcanine"]
+                },
+                { 
+                    name: "Pryce", type: "Ice", badge: "Glacier", cap: 45, team: ["Seel", "Dewgong", "Piloswine"],
+                    strategy: "Piloswine is Ground/Ice. Use Water or fighting. Electric works on the Seals.",
+                    recommended: ["Ampharos", "Machamp", "Feraligatr", "Magmar"]
+                },
+                { 
+                    name: "Clair", type: "Dragon", badge: "Rising", cap: 55, team: ["Gyarados", "Dragonair", "Dragonair", "Kingdra"],
+                    strategy: "Kingdra (Water/Dragon) has no weaknesses besides Dragon. Use neutral strong hits or Status.",
+                    recommended: ["Gyarados", "Lapras (Ice Beam)", "Dragonite", "Mamoswine"]
+                },
+                { 
+                    name: "Elite 4 Will", type: "Psychic", badge: "E4", cap: 62, team: ["Xatu", "Jynx", "Exeggutor", "Slowbro", "Xatu"],
+                    strategy: "Dual types everywhere. Electric for Xatu/Slowbro. Fire for Jynx/Exeggutor. Dark types sweep.",
+                    recommended: ["Typhlosion", "Umbreon", "Ampharos", "Houndoom"]
+                },
+                { 
+                    name: "Elite 4 Koga", type: "Poison", badge: "E4", cap: 62, team: ["Ariados", "Forretress", "Muk", "Venomoth", "Crobat"],
+                    strategy: "Forretress is Bug/Steel (4x Fire). Psychic works for the rest. Ground for Muk.",
+                    recommended: ["Espeon", "Typhlosion", "Donphan", "Alakazam"]
+                },
+                { 
+                    name: "Elite 4 Bruno", type: "Fighting", badge: "E4", cap: 62, team: ["Hitmontop", "Hitmonlee", "Hitmonchan", "Onix", "Machamp"],
+                    strategy: "Flying/Psychic sweep. Surf the Onix.",
+                    recommended: ["Alakazam", "Lugia (if caught)", "Slowbro", "Crobat"]
+                },
+                { 
+                    name: "Elite 4 Karen", type: "Dark", badge: "E4", cap: 62, team: ["Umbreon", "Vileplume", "Gengar", "Murkrow", "Houndoom"],
+                    strategy: "Mixed team. Fighting for Umbreon/Houndoom. Psychic for Gengar/Vileplume. Electric for Murkrow.",
+                    recommended: ["Heracross", "Machamp", "Espeon", "Ampharos"]
+                },
             ]
         };
 
@@ -981,7 +1254,8 @@
                 const stats = {};
                 REGIONS.forEach(r => {
                     const total = STORY_CHECKLISTS[r].length;
-                    const done = STORY_CHECKLISTS[r].filter((_, i) => checklist[`${r}_${i}`]).length;
+                    // Updated to filter by the new v2 keys
+                    const done = STORY_CHECKLISTS[r].filter((_, i) => checklist[`${r}_v2_${i}`]).length;
                     stats[r] = Math.round((done / total) * 100);
                 });
                 return stats;
@@ -1016,7 +1290,8 @@
                                 <div className="bg-slate-900/50 border-t border-slate-700 p-4">
                                     <div className="space-y-1">
                                         {STORY_CHECKLISTS[region].map((step, idx) => {
-                                            const key = `${region}_${idx}`;
+                                            // CHANGED: Added '_v2_' to the key to reset progress for the new list structure
+                                            const key = `${region}_v2_${idx}`;
                                             return (
                                                 <label key={idx} className="flex items-start gap-3 p-3 hover:bg-slate-800 rounded cursor-pointer transition-colors group">
                                                     <div 
@@ -1132,16 +1407,16 @@
                 // If running locally or on GitHub Pages, paste your Firebase config below.
                 // You can find this in your Firebase Console -> Project Settings -> General -> Your Apps
                 const firebaseConfig = window.__firebase_config
-                  ?  JSON.parse(window.__firebase_config)
-                  : {
-                      apiKey: "AIzaSyCmWxymJAF-ytJuazhxby2N34j5OHt3RDM",
-                      authDomain: "pokemmo-companion.firebaseapp.com",
-                      projectId: "pokemmo-companion",
-                      storageBucket: "pokemmo-companion.firebasestorage.app",
-                      messagingSenderId: "100403158518",
-                      appId: "1:100403158518:web:fbf8e1fa2ca0bd50717bd7",
-                      measurementId: "G-N3MCV6EHX3",
-                    };
+                    ? JSON.parse(window.__firebase_config)
+                    : {
+                        apiKey: "AIzaSyCmWxymJAF-ytJuazhxby2N34j5OHt3RDM",
+                        authDomain: "pokemmo-companion.firebaseapp.com",
+                        projectId: "pokemmo-companion",
+                        storageBucket: "pokemmo-companion.firebasestorage.app",
+                        messagingSenderId: "100403158518",
+                        appId: "1:100403158518:web:fbf8e1fa2ca0bd50717bd7",
+                        measurementId: "G-N3MCV6EHX3",
+                      };
 
                 const app = initializeApp(firebaseConfig);
                 const auth = getAuth(app);
