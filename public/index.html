@@ -1,2306 +1,1419 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PokeMMO Companion</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script
-      src="https://unpkg.com/react@18/umd/react.development.js"
-      crossorigin
-    ></script>
-    <script
-      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
-      crossorigin
-    ></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <!-- Google Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
     <style>
-      body {
-        font-family: "Inter", sans-serif;
-        background-color: #0f172a;
-        color: #e2e8f0;
-      }
-      .mono {
-        font-family: "JetBrains Mono", monospace;
-      }
-      .scrollbar-hide::-webkit-scrollbar {
-        display: none;
-      }
-      .scrollbar-hide {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-      }
-      .pixelated {
-        image-rendering: pixelated;
-      }
-
-      /* Type Badges */
-      .type-normal {
-        background-color: #a8a77a;
-        color: #000;
-      }
-      .type-fire {
-        background-color: #ee8130;
-        color: #fff;
-      }
-      .type-water {
-        background-color: #6390f0;
-        color: #fff;
-      }
-      .type-electric {
-        background-color: #f7d02c;
-        color: #000;
-      }
-      .type-grass {
-        background-color: #7ac74c;
-        color: #fff;
-      }
-      .type-ice {
-        background-color: #96d9d6;
-        color: #000;
-      }
-      .type-fighting {
-        background-color: #c22e28;
-        color: #fff;
-      }
-      .type-poison {
-        background-color: #a33ea1;
-        color: #fff;
-      }
-      .type-ground {
-        background-color: #e2bf65;
-        color: #000;
-      }
-      .type-flying {
-        background-color: #a98ff3;
-        color: #000;
-      }
-      .type-psychic {
-        background-color: #f95587;
-        color: #fff;
-      }
-      .type-bug {
-        background-color: #a6b91a;
-        color: #fff;
-      }
-      .type-rock {
-        background-color: #b6a136;
-        color: #000;
-      }
-      .type-ghost {
-        background-color: #735797;
-        color: #fff;
-      }
-      .type-dragon {
-        background-color: #6f35fc;
-        color: #fff;
-      }
-      .type-dark {
-        background-color: #705746;
-        color: #fff;
-      }
-      .type-steel {
-        background-color: #b7b7ce;
-        color: #000;
-      }
-      .type-fairy {
-        background-color: #d685ad;
-        color: #000;
-      }
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #e2e8f0; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .pixelated { image-rendering: pixelated; }
+        
+        /* Type Badges */
+        .type-normal { background-color: #A8A77A; color: #000; }
+        .type-fire { background-color: #EE8130; color: #fff; }
+        .type-water { background-color: #6390F0; color: #fff; }
+        .type-electric { background-color: #F7D02C; color: #000; }
+        .type-grass { background-color: #7AC74C; color: #fff; }
+        .type-ice { background-color: #96D9D6; color: #000; }
+        .type-fighting { background-color: #C22E28; color: #fff; }
+        .type-poison { background-color: #A33EA1; color: #fff; }
+        .type-ground { background-color: #E2BF65; color: #000; }
+        .type-flying { background-color: #A98FF3; color: #000; }
+        .type-psychic { background-color: #F95587; color: #fff; }
+        .type-bug { background-color: #A6B91A; color: #fff; }
+        .type-rock { background-color: #B6A136; color: #000; }
+        .type-ghost { background-color: #735797; color: #fff; }
+        .type-dragon { background-color: #6F35FC; color: #fff; }
+        .type-dark { background-color: #705746; color: #fff; }
+        .type-steel { background-color: #B7B7CE; color: #000; }
+        .type-fairy { background-color: #D685AD; color: #000; }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <div id="root"></div>
 
     <!-- Firebase SDKs -->
     <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-      import {
-        getAuth,
-        signInAnonymously,
-        signInWithCustomToken,
-        onAuthStateChanged,
-      } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-      import {
-        getFirestore,
-        doc,
-        setDoc,
-        getDoc,
-        collection,
-        onSnapshot,
-      } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-      // Global variable exposure for React
-      window.firebaseModules = {
-        initializeApp,
-        getAuth,
-        signInAnonymously,
-        signInWithCustomToken,
-        onAuthStateChanged,
-        getFirestore,
-        doc,
-        setDoc,
-        getDoc,
-        collection,
-        onSnapshot,
-      };
+        // Global variable exposure for React
+        window.firebaseModules = { initializeApp, getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, getFirestore, doc, setDoc, getDoc, collection, onSnapshot };
     </script>
 
     <script type="text/babel">
-      const { useState, useEffect, useMemo, useRef } = React;
+        const { useState, useEffect, useMemo, useRef } = React;
 
-      // --- UTILITIES ---
-      // Levenshtein distance for typo correction
-      const getLevenshteinDistance = (a, b) => {
-        const matrix = [];
-        for (let i = 0; i <= b.length; i++) {
-          matrix[i] = [i];
-        }
-        for (let j = 0; j <= a.length; j++) {
-          matrix[0][j] = j;
-        }
-        for (let i = 1; i <= b.length; i++) {
-          for (let j = 1; j <= a.length; j++) {
-            if (b.charAt(i - 1) === a.charAt(j - 1)) {
-              matrix[i][j] = matrix[i - 1][j - 1];
-            } else {
-              matrix[i][j] = Math.min(
-                matrix[i - 1][j - 1] + 1,
-                Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1)
-              );
+        // --- UTILITIES ---
+        // Levenshtein distance for typo correction
+        const getLevenshteinDistance = (a, b) => {
+            const matrix = [];
+            for (let i = 0; i <= b.length; i++) { matrix[i] = [i]; }
+            for (let j = 0; j <= a.length; j++) { matrix[0][j] = j; }
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
+                    if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
+                    }
+                }
             }
-          }
-        }
-        return matrix[b.length][a.length];
-      };
-
-      // --- INLINE ICONS (Replaces Lucide Dependency) ---
-      const Icon = ({ children, size = 24, className = "" }) => (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width={size}
-          height={size}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className={className}
-        >
-          {children}
-        </svg>
-      );
-      const Search = (p) => (
-        <Icon {...p}>
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </Icon>
-      );
-      const Book = (p) => (
-        <Icon {...p}>
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-        </Icon>
-      );
-      const MapIcon = (p) => (
-        <Icon {...p}>
-          <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
-          <line x1="8" y1="2" x2="8" y2="18" />
-          <line x1="16" y1="6" x2="16" y2="22" />
-        </Icon>
-      );
-      const Shield = (p) => (
-        <Icon {...p}>
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-        </Icon>
-      );
-      const CheckSquare = (p) => (
-        <Icon {...p}>
-          <polyline points="9 11 12 14 22 4" />
-          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-        </Icon>
-      );
-      const Plus = (p) => (
-        <Icon {...p}>
-          <line x1="12" y1="5" x2="12" y2="19" />
-          <line x1="5" y1="12" x2="19" y2="12" />
-        </Icon>
-      );
-      const X = (p) => (
-        <Icon {...p}>
-          <line x1="18" y1="6" x2="6" y2="18" />
-          <line x1="6" y1="6" x2="18" y2="18" />
-        </Icon>
-      );
-      const ExternalLink = (p) => (
-        <Icon {...p}>
-          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-          <polyline points="15 3 21 3 21 9" />
-          <line x1="10" y1="14" x2="21" y2="3" />
-        </Icon>
-      );
-      const ChevronDown = (p) => (
-        <Icon {...p}>
-          <polyline points="6 9 12 15 18 9" />
-        </Icon>
-      );
-      const ChevronUp = (p) => (
-        <Icon {...p}>
-          <polyline points="18 15 12 9 6 15" />
-        </Icon>
-      );
-      const User = (p) => (
-        <Icon {...p}>
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-          <circle cx="12" cy="7" r="4" />
-        </Icon>
-      );
-      const Save = (p) => (
-        <Icon {...p}>
-          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-          <polyline points="17 21 17 13 7 13 7 21" />
-          <polyline points="7 3 7 8 15 8" />
-        </Icon>
-      );
-      const Info = (p) => (
-        <Icon {...p}>
-          <circle cx="12" cy="12" r="10" />
-          <line x1="12" y1="16" x2="12" y2="12" />
-          <line x1="12" y1="8" x2="12.01" y2="8" />
-        </Icon>
-      );
-      const Swords = (p) => (
-        <Icon {...p}>
-          <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5" />
-          <line x1="13" y1="19" x2="19" y2="13" />
-          <line x1="16" y1="16" x2="20" y2="20" />
-          <line x1="19" y1="21" x2="21" y2="19" />
-          <polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5" />
-          <line x1="16" y1="5" x2="20" y2="9" />
-          <line x1="5" y1="16" x2="9" y2="20" />
-          <line x1="3" y1="21" x2="5" y2="19" />
-        </Icon>
-      );
-
-      // --- END ICONS ---
-
-      /* --- DATA CONSTANTS --- */
-
-      const REGIONS = ["Kanto", "Hoenn", "Sinnoh", "Unova", "Johto"];
-
-      const TYPE_WEAKNESS = {
-        normal: ["fighting"],
-        fire: ["water", "ground", "rock"],
-        water: ["electric", "grass"],
-        electric: ["ground"],
-        grass: ["fire", "ice", "poison", "flying", "bug"],
-        ice: ["fire", "fighting", "rock", "steel"],
-        fighting: ["flying", "psychic", "fairy"],
-        poison: ["ground", "psychic"],
-        ground: ["water", "grass", "ice"],
-        flying: ["electric", "ice", "rock"],
-        psychic: ["bug", "ghost", "dark"],
-        bug: ["fire", "flying", "rock"],
-        rock: ["water", "grass", "fighting", "ground", "steel"],
-        ghost: ["ghost", "dark"],
-        dragon: ["ice", "dragon", "fairy"],
-        dark: ["fighting", "bug", "fairy"],
-        steel: ["fire", "fighting", "ground"],
-        fairy: ["poison", "steel"],
-      };
-
-      const GYM_DATA = {
-        Kanto: [
-          {
-            name: "Brock",
-            type: "Rock",
-            badge: "Boulder",
-            cap: 20,
-            team: ["Geodude", "Onix"],
-            strategy:
-              "Rock/Ground is 4x weak to Grass and Water. Special attacks bypass their high Defense.",
-            recommended: ["Bulbasaur", "Squirtle", "Mankey", "Nidoran"],
-          },
-          {
-            name: "Misty",
-            type: "Water",
-            badge: "Cascade",
-            cap: 26,
-            team: ["Staryu", "Starmie"],
-            strategy:
-              "Starmie is fast and has high Sp. Atk. Use Electric types or bulky Grass types that can resist Water Pulse.",
-            recommended: ["Pikachu", "Oddish", "Bellsprout", "Ivysaur"],
-          },
-          {
-            name: "Lt. Surge",
-            type: "Electric",
-            badge: "Thunder",
-            cap: 33,
-            team: ["Voltorb", "Pikachu", "Raichu"],
-            strategy:
-              "Ground types are immune to Electric attacks. Diglett/Dugtrio outspeeds and KOs easily.",
-            recommended: ["Diglett", "Geodude", "Sandshrew"],
-          },
-          {
-            name: "Erika",
-            type: "Grass",
-            badge: "Rainbow",
-            cap: 40,
-            team: ["Victreebel", "Tangela", "Vileplume"],
-            strategy:
-              "Fire and Flying types dominate here. Watch out for status powders (Sleep/Poison).",
-            recommended: ["Charmeleon", "Growlithe", "Pidgeotto", "Fearow"],
-          },
-          {
-            name: "Koga",
-            type: "Poison",
-            badge: "Soul",
-            cap: 46,
-            team: ["Koffing", "Muk", "Koffing", "Weezing"],
-            strategy:
-              "Koga uses evasion and toxic tactics. Psychic and Ground types hit super effectively. Steel types are immune to Poison.",
-            recommended: ["Kadabra", "Hypno", "Dugtrio", "Nidoking"],
-          },
-          {
-            name: "Sabrina",
-            type: "Psychic",
-            badge: "Marsh",
-            cap: 50,
-            team: ["Kadabra", "Mr. Mime", "Venomoth", "Alakazam"],
-            strategy:
-              "Physical attackers are best as Psychic types have low Defense. Snorlax (Shadow Ball) or fast Ghost types work well.",
-            recommended: ["Snorlax", "Gengar", "Dodrio", "Scyther"],
-          },
-          {
-            name: "Blaine",
-            type: "Fire",
-            badge: "Volcano",
-            cap: 55,
-            team: ["Growlithe", "Ponyta", "Rapidash", "Arcanine"],
-            strategy:
-              "Rain Dance weakens Fire moves. Water, Ground, and Rock types are essential. Watch out for Solar Beam coverage.",
-            recommended: ["Blastoise", "Gyarados", "Golem", "Omastar"],
-          },
-          {
-            name: "Giovanni",
-            type: "Ground",
-            badge: "Earth",
-            cap: 62,
-            team: ["Rhyhorn", "Dugtrio", "Nidoqueen", "Nidoking", "Rhydon"],
-            strategy:
-              "Water and Grass moves decimate his team. Ice Beam is also excellent for coverage against Nidos.",
-            recommended: ["Starmie", "Lapras", "Exeggutor", "Vaporeon"],
-          },
-          {
-            name: "Elite 4 Lorelei",
-            type: "Ice",
-            badge: "E4",
-            cap: 62,
-            team: ["Dewgong", "Cloyster", "Slowbro", "Jynx", "Lapras"],
-            strategy:
-              "Electric types handle the Water/Ice hybrids. Use Fighting for Lapras/Cloyster/Dewgong.",
-            recommended: ["Jolteon", "Magneton", "Machamp", "Hitmonlee"],
-          },
-          {
-            name: "Elite 4 Bruno",
-            type: "Fighting",
-            badge: "E4",
-            cap: 62,
-            team: ["Onix", "Hitmonchan", "Hitmonlee", "Onix", "Machamp"],
-            strategy:
-              "Flying and Psychic types sweep the fighters. Use Water/Grass for the two Onix.",
-            recommended: ["Alakazam", "Starmie", "Pidgeot", "Slowbro"],
-          },
-          {
-            name: "Elite 4 Agatha",
-            type: "Ghost",
-            badge: "E4",
-            cap: 62,
-            team: ["Gengar", "Golbat", "Haunter", "Arbok", "Gengar"],
-            strategy:
-              "Her 'Ghosts' are mostly Poison type. Psychic moves are devastating. Ground works too.",
-            recommended: ["Alakazam", "Hypno", "Mr. Mime", "Dugtrio"],
-          },
-          {
-            name: "Elite 4 Lance",
-            type: "Dragon",
-            badge: "E4",
-            cap: 62,
-            team: [
-              "Gyarados",
-              "Dragonair",
-              "Dragonair",
-              "Aerodactyl",
-              "Dragonite",
-            ],
-            strategy:
-              "Ice Beam is mandatory for 4x damage on Dragonites. Electric for Gyarados/Aerodactyl.",
-            recommended: ["Lapras", "Articuno", "Cloyster", "Jolteon"],
-          },
-        ],
-        Hoenn: [
-          {
-            name: "Roxanne",
-            type: "Rock",
-            badge: "Stone",
-            cap: 20,
-            team: ["Geodude", "Geodude", "Nosepass"],
-            strategy:
-              "Use Mudkip (Water) or Treecko (Grass). Shroomish (Absorb) is also a great early catch.",
-            recommended: ["Marshtomp", "Grovyle", "Shroomish", "Wingull"],
-          },
-          {
-            name: "Brawly",
-            type: "Fighting",
-            badge: "Knuckle",
-            cap: 24,
-            team: ["Machop", "Meditite", "Makuhita"],
-            strategy:
-              "Ralts (Psychic) or Taillow/Wingull (Flying) make this fight trivial. Watch for Bulk Up.",
-            recommended: ["Kirlia", "Swellow", "Pelipper", "Dustox"],
-          },
-          {
-            name: "Wattson",
-            type: "Electric",
-            badge: "Dynamo",
-            cap: 28,
-            team: ["Voltorb", "Electrike", "Magneton", "Manectric"],
-            strategy:
-              "Magneton resists almost everything. Use Ground types (Marshtomp/Geodude) or Fire/Fighting for Magneton.",
-            recommended: ["Marshtomp", "Combusken", "Geodude", "Numel"],
-          },
-          {
-            name: "Flannery",
-            type: "Fire",
-            badge: "Heat",
-            cap: 33,
-            team: ["Numel", "Slugma", "Camerupt", "Torkoal"],
-            strategy:
-              "Rain Dance helps. Torkoal is tanky; Special Water attacks are best. Watch for Overheat.",
-            recommended: ["Marshtomp", "Gyarados", "Tentacool", "Azumarill"],
-          },
-          {
-            name: "Norman",
-            type: "Normal",
-            badge: "Balance",
-            cap: 38,
-            team: ["Spinda", "Vigoroth", "Linoone", "Slaking"],
-            strategy:
-              "Slaking hits like a truck but skips every other turn (Truant). Use Protect/Detect on his attack turns.",
-            recommended: [
-              "Pelipper (Protect)",
-              "Torkoal (Protect)",
-              "Breloom",
-              "Hariyama",
-            ],
-          },
-          {
-            name: "Winona",
-            type: "Flying",
-            badge: "Feather",
-            cap: 44,
-            team: ["Swablu", "Tropius", "Pelipper", "Skarmory", "Altaria"],
-            strategy:
-              "Altaria is Dragon/Flying (4x Ice weak). Skarmory needs Fire or Electric. Altaria can setup Dragon Dance.",
-            recommended: [
-              "Magneton",
-              "Manectric",
-              "Walrein",
-              "Tentacruel (Ice Beam)",
-            ],
-          },
-          {
-            name: "Tate & Liza",
-            type: "Psychic",
-            badge: "Mind",
-            cap: 48,
-            team: ["Claydol", "Xatu", "Lunatone", "Solrock"],
-            strategy:
-              "Double Battle. Surf hits both foes. Dark types (Sharpedo/Absol) are immune to Psychic.",
-            recommended: ["Swampert", "Sharpedo", "Cradily", "Absol"],
-          },
-          {
-            name: "Juan",
-            type: "Water",
-            badge: "Rain",
-            cap: 58,
-            team: ["Luvdisc", "Whiscash", "Sealeo", "Crawdaunt", "Kingdra"],
-            strategy:
-              "Kingdra (Water/Dragon) has only one weakness: Dragon (or Freeze Dry). Use neutral strong hits or status.",
-            recommended: ["Manectric", "Ludicolo", "Gardevoir", "Breloom"],
-          },
-          {
-            name: "Elite 4 Sidney",
-            type: "Dark",
-            badge: "E4",
-            cap: 58,
-            team: ["Mightyena", "Shiftry", "Cacturne", "Crawdaunt", "Absol"],
-            strategy:
-              "Bug and Fighting moves sweep. Fast U-Turners or a strong Machamp work wonders.",
-            recommended: [
-              "Heracross",
-              "Blaziken",
-              "Machamp",
-              "Gardevoir (Moonblast)",
-            ],
-          },
-          {
-            name: "Elite 4 Phoebe",
-            type: "Ghost",
-            badge: "E4",
-            cap: 58,
-            team: ["Dusclops", "Banette", "Sableye", "Banette", "Dusclops"],
-            strategy:
-              "Sableye has no weaknesses (Gen 3 logic). Use strong neutral hits. Dark types allow you to resist Shadow Ball.",
-            recommended: ["Absol", "Sharpedo", "Mightyena", "Magneton"],
-          },
-          {
-            name: "Elite 4 Glacia",
-            type: "Ice",
-            badge: "E4",
-            cap: 58,
-            team: ["Sealeo", "Glalie", "Sealeo", "Glalie", "Walrein"],
-            strategy:
-              "Thick Fat Hariyama or Walrein mirrors work well. Electric hits the water hybrids hard.",
-            recommended: ["Hariyama", "Manectric", "Metagross", "Aggron"],
-          },
-          {
-            name: "Elite 4 Drake",
-            type: "Dragon",
-            badge: "E4",
-            cap: 58,
-            team: ["Shelgon", "Altaria", "Kingdra", "Flygon", "Salamence"],
-            strategy:
-              "Ice Beam is essential (4x on Flygon/Mence/Altaria). Kingdra is the tanky outlier.",
-            recommended: [
-              "Walrein",
-              "Starmie (Ice Beam)",
-              "Gardevoir",
-              "Flygon",
-            ],
-          },
-        ],
-        Sinnoh: [
-          {
-            name: "Roark",
-            type: "Rock",
-            badge: "Coal",
-            cap: 20,
-            team: ["Geodude", "Onix", "Cranidos"],
-            strategy:
-              "Monferno (Mach Punch) or Piplup (Bubble) sweep. Turtwig (Razor Leaf) also works.",
-            recommended: ["Monferno", "Prinplup", "Budew", "Machop"],
-          },
-          {
-            name: "Gardenia",
-            type: "Grass",
-            badge: "Forest",
-            cap: 26,
-            team: ["Turtwig", "Cherrim", "Roserade"],
-            strategy:
-              "Staravia or Monferno dominate. Roserade hits hard, avoid using Water/Ground types.",
-            recommended: ["Staravia", "Monferno", "Zubat", "Ponyta"],
-          },
-          {
-            name: "Fantina",
-            type: "Ghost",
-            badge: "Relic",
-            cap: 33,
-            team: ["Duskull", "Haunter", "Mismagius"],
-            strategy:
-              "Mismagius is fast and strong. Use Dark types (Bite) or Normal types to switch into Ghost moves.",
-            recommended: [
-              "Floatzel (Crunch)",
-              "Luxio (Bite)",
-              "Staravia",
-              "Gyarados",
-            ],
-          },
-          {
-            name: "Maylene",
-            type: "Fighting",
-            badge: "Cobble",
-            cap: 36,
-            team: ["Meditite", "Machoke", "Lucario"],
-            strategy:
-              "Lucario is part Steel, so Fire or Ground works best. Flying handles the rest.",
-            recommended: ["Staraptor", "Infernape", "Gastrodon", "Gligar"],
-          },
-          {
-            name: "Crasher Wake",
-            type: "Water",
-            badge: "Fen",
-            cap: 39,
-            team: ["Gyarados", "Quagsire", "Floatzel"],
-            strategy:
-              "Electric for Gyarados/Floatzel. Grass (4x) for Quagsire is mandatory.",
-            recommended: ["Luxray", "Roserade", "Rotom", "Torterra"],
-          },
-          {
-            name: "Byron",
-            type: "Steel",
-            badge: "Mine",
-            cap: 44,
-            team: ["Magneton", "Steelix", "Bastiodon"],
-            strategy:
-              "Fire and Fighting/Ground types are key. Special attacks work better on Steelix/Bastiodon.",
-            recommended: ["Infernape", "Gastrodon", "Garchomp", "Lucario"],
-          },
-          {
-            name: "Candice",
-            type: "Ice",
-            badge: "Icicle",
-            cap: 48,
-            team: ["Sneasel", "Piloswine", "Abomasnow", "Froslass"],
-            strategy:
-              "Froslass is Ghost/Ice (Fast). Abomasnow sets Hail (100% Blizzard acc). Change weather or use Fire.",
-            recommended: ["Infernape", "Rapidash", "Lucario", "Staraptor"],
-          },
-          {
-            name: "Volkner",
-            type: "Electric",
-            badge: "Beacon",
-            cap: 56,
-            team: ["Jolteon", "Raichu", "Luxray", "Electivire"],
-            strategy:
-              "Ground types are immune. Electivire has coverage (Ice Punch), so be careful with Garchomp.",
-            recommended: ["Garchomp", "Gastrodon", "Mamoswine", "Rhyperior"],
-          },
-          {
-            name: "Elite 4 Aaron",
-            type: "Bug",
-            badge: "E4",
-            cap: 62,
-            team: ["Yanmega", "Scizor", "Vespiquen", "Heracross", "Drapion"],
-            strategy:
-              "Rock (Stealth Rock) destroys Yanmega/Vespiquen. Fire for Scizor/Heracross. Drapion has no Bug weak.",
-            recommended: ["Infernape", "Staraptor", "Rampardos", "Garchomp"],
-          },
-          {
-            name: "Elite 4 Bertha",
-            type: "Ground",
-            badge: "E4",
-            cap: 62,
-            team: ["Whiscash", "Gliscor", "Hippowdon", "Golem", "Rhyperior"],
-            strategy:
-              "Grass Knot / Energy Ball destroys her heavy team. Ice Beam for Gliscor.",
-            recommended: [
-              "Roserade",
-              "Torterra",
-              "Empoleon",
-              "Floatzel (Ice Beam)",
-            ],
-          },
-          {
-            name: "Elite 4 Flint",
-            type: "Fire",
-            badge: "E4",
-            cap: 62,
-            team: ["Houndoom", "Flareon", "Rapidash", "Infernape", "Magmortar"],
-            strategy:
-              "Fast Water types or Earth Power users. Be careful of Solar Beam/Thunder Punch coverage.",
-            recommended: ["Garchomp", "Gyarados", "Floatzel", "Gastrodon"],
-          },
-          {
-            name: "Elite 4 Lucian",
-            type: "Psychic",
-            badge: "E4",
-            cap: 62,
-            team: ["Mr. Mime", "Espeon", "Bronzong", "Alakazam", "Gallade"],
-            strategy:
-              "Bronzong usually Levitates (Fire weak). Dark types generally wall him, but watch for Gallade (Fighting).",
-            recommended: ["Weavile", "Spiritomb", "Houndoom", "Garchomp"],
-          },
-        ],
-        Unova: [
-          {
-            name: "Trio Leaders",
-            type: "Mix",
-            badge: "Trio",
-            cap: 20,
-            team: ["Lilipup", "Elemental Monkey"],
-            strategy:
-              "You face the type strong against your starter. Use the Monkey you got in Dreamyard.",
-            recommended: ["Pansear", "Pansage", "Panpour", "Roggenrola"],
-          },
-          {
-            name: "Lenora",
-            type: "Normal",
-            badge: "Basic",
-            cap: 24,
-            team: ["Herdier", "Watchog"],
-            strategy:
-              "Watchog uses Retaliate (High damage) and Hypnosis. Use Fighting types (Timburr/Sawk/Throh).",
-            recommended: ["Sawk", "Throh", "Timburr", "Scraggy"],
-          },
-          {
-            name: "Burgh",
-            type: "Bug",
-            badge: "Insect",
-            cap: 27,
-            team: ["Whirlipede", "Dwebble", "Leavanny"],
-            strategy:
-              "Dwebble sets hazards. Leavanny is 4x weak to Fire and Flying. Use Darumaka.",
-            recommended: ["Darumaka", "Sigilyph", "Pignite", "Tranquill"],
-          },
-          {
-            name: "Elesa",
-            type: "Electric",
-            badge: "Bolt",
-            cap: 31,
-            team: ["Emolga", "Emolga", "Zebstrika"],
-            strategy:
-              "Volt Switch spam. Emolga is immune to Ground. Use Rock types (Roggenrola) or Sandile.",
-            recommended: [
-              "Sandile",
-              "Boldore",
-              "Excadrill",
-              "Zebstrika (LightningRod)",
-            ],
-          },
-          {
-            name: "Clay",
-            type: "Ground",
-            badge: "Quake",
-            cap: 35,
-            team: ["Krokorok", "Palpitoad", "Excadrill"],
-            strategy:
-              "Excadrill is incredibly strong. Water or Fighting types are best. Palpitoad is Water/Ground (4x Grass).",
-            recommended: ["Dewott", "Lilligant", "Deerling", "Conkeldurr"],
-          },
-          {
-            name: "Skyla",
-            type: "Flying",
-            badge: "Jet",
-            cap: 40,
-            team: ["Swoobat", "Unfezant", "Swanna"],
-            strategy:
-              "Electric types sweep. Rock is good but Swoobat has Energy Ball. Swanna is 4x Electric weak.",
-            recommended: ["Galvantula", "Zebstrika", "Archeops", "Gigalith"],
-          },
-          {
-            name: "Brycen",
-            type: "Ice",
-            badge: "Freeze",
-            cap: 44,
-            team: ["Vanillish", "Cryogonal", "Beartic"],
-            strategy:
-              "Cryogonal has huge Sp. Def but paper Defense. Use Physical Fighting or Fire moves.",
-            recommended: ["Conkeldurr", "Darmanitan", "Scrafty", "Chandelure"],
-          },
-          {
-            name: "Drayden/Iris",
-            type: "Dragon",
-            badge: "Legend",
-            cap: 48,
-            team: ["Fraxure", "Druddigon", "Haxorus"],
-            strategy:
-              "Dragon Dance Haxorus is a run killer. Burn it, or KO it fast with Ice Beam/Dragon Claw.",
-            recommended: [
-              "Haxorus",
-              "Beartic",
-              "Vanilluxe",
-              "Ferrothorn (Wall)",
-            ],
-          },
-          {
-            name: "Elite 4 Shauntal",
-            type: "Ghost",
-            badge: "E4",
-            cap: 56,
-            team: ["Cofagrigus", "Jellicent", "Golurk", "Chandelure"],
-            strategy:
-              "Chandelure hits massive Sp. Atk. Dark types (Krookodile) do well. Water for Golurk/Chandelure.",
-            recommended: ["Krookodile", "Bisharp", "Samurott", "Hydreigon"],
-          },
-          {
-            name: "Elite 4 Grimsley",
-            type: "Dark",
-            badge: "E4",
-            cap: 56,
-            team: ["Scrafty", "Krookodile", "Liepard", "Bisharp"],
-            strategy:
-              "Fighting types destroy 3/4 of his team. Scrafty is 4x weak to Fairy (if available) or Flying.",
-            recommended: ["Conkeldurr", "Mienshao", "Lucario", "Scrafty"],
-          },
-          {
-            name: "Elite 4 Caitlin",
-            type: "Psychic",
-            badge: "E4",
-            cap: 56,
-            team: ["Reuniclus", "Sigilyph", "Musharna", "Gothitelle"],
-            strategy:
-              "Trick Room or Defensive setup. Bug and Ghost are great. Volcarona sets up well here.",
-            recommended: [
-              "Volcarona",
-              "Chandelure",
-              "Escavalier",
-              "Krookodile",
-            ],
-          },
-          {
-            name: "Elite 4 Marshal",
-            type: "Fighting",
-            badge: "E4",
-            cap: 56,
-            team: ["Throh", "Sawk", "Conkeldurr", "Mienshao"],
-            strategy:
-              "Physical tanks. Many have Stone Edge for flyers. Reuniclus or Sigilyph work well.",
-            recommended: ["Reuniclus", "Sigilyph", "Archeops", "Golurk"],
-          },
-        ],
-        Johto: [
-          {
-            name: "Falkner",
-            type: "Flying",
-            badge: "Zephyr",
-            cap: 20,
-            team: ["Pidgey", "Pidgeotto"],
-            strategy:
-              "Pidgeotto has Roost. Geodude (Rock Throw) or Mareep (Thundershock) are best.",
-            recommended: ["Geodude", "Mareep", "Onix"],
-          },
-          {
-            name: "Bugsy",
-            type: "Bug",
-            badge: "Hive",
-            cap: 24,
-            team: ["Metapod", "Kakuna", "Scyther"],
-            strategy:
-              "Scyther uses U-Turn and hits hard. Geodude (Rock) resists Normal/Flying and hits 4x effective.",
-            recommended: ["Geodude", "Quilava", "Gastly", "Flaaffy"],
-          },
-          {
-            name: "Whitney",
-            type: "Normal",
-            badge: "Plain",
-            cap: 29,
-            team: ["Clefairy", "Miltank"],
-            strategy:
-              "The infamous Miltank (Rollout/Attract/Milk Drink). Use Female Geodude/Onix or Machop.",
-            recommended: [
-              "Machop",
-              "Geodude (Female)",
-              "Heracross",
-              "Croconaw",
-            ],
-          },
-          {
-            name: "Morty",
-            type: "Ghost",
-            badge: "Fog",
-            cap: 37,
-            team: ["Gastly", "Haunter", "Haunter", "Gengar"],
-            strategy:
-              "Hypnosis/Dream Eater combo. Normal types (Raticate/Tauros) are immune to Shadow Ball. Use Bite/Crunch.",
-            recommended: [
-              "Raticate (Crunch)",
-              "Gyarados (Bite)",
-              "Umbreon",
-              "Girafarig",
-            ],
-          },
-          {
-            name: "Chuck",
-            type: "Fighting",
-            badge: "Storm",
-            cap: 41,
-            team: ["Primeape", "Poliwrath"],
-            strategy:
-              "Poliwrath uses Focus Punch (Sleep needed). Use Flying or Psychic. Hypno is tanky enough.",
-            recommended: [
-              "Hypno",
-              "Pidgeot",
-              "Ampharos (for Poliwrath)",
-              "Alakazam",
-            ],
-          },
-          {
-            name: "Jasmine",
-            type: "Steel",
-            badge: "Mineral",
-            cap: 43,
-            team: ["Magnemite", "Magnemite", "Steelix"],
-            strategy:
-              "Steelix has huge Defense. Use Special Fire (Typhlosion) or Water (Feraligatr) moves.",
-            recommended: ["Typhlosion", "Feraligatr", "Quagsire", "Arcanine"],
-          },
-          {
-            name: "Pryce",
-            type: "Ice",
-            badge: "Glacier",
-            cap: 45,
-            team: ["Seel", "Dewgong", "Piloswine"],
-            strategy:
-              "Piloswine is Ground/Ice. Use Water or fighting. Electric works on the Seals.",
-            recommended: ["Ampharos", "Machamp", "Feraligatr", "Magmar"],
-          },
-          {
-            name: "Clair",
-            type: "Dragon",
-            badge: "Rising",
-            cap: 55,
-            team: ["Gyarados", "Dragonair", "Dragonair", "Kingdra"],
-            strategy:
-              "Kingdra (Water/Dragon) has no weaknesses besides Dragon. Use neutral strong hits or Status.",
-            recommended: [
-              "Gyarados",
-              "Lapras (Ice Beam)",
-              "Dragonite",
-              "Mamoswine",
-            ],
-          },
-          {
-            name: "Elite 4 Will",
-            type: "Psychic",
-            badge: "E4",
-            cap: 62,
-            team: ["Xatu", "Jynx", "Exeggutor", "Slowbro", "Xatu"],
-            strategy:
-              "Dual types everywhere. Electric for Xatu/Slowbro. Fire for Jynx/Exeggutor. Dark types sweep.",
-            recommended: ["Typhlosion", "Umbreon", "Ampharos", "Houndoom"],
-          },
-          {
-            name: "Elite 4 Koga",
-            type: "Poison",
-            badge: "E4",
-            cap: 62,
-            team: ["Ariados", "Forretress", "Muk", "Venomoth", "Crobat"],
-            strategy:
-              "Forretress is Bug/Steel (4x Fire). Psychic works for the rest. Ground for Muk.",
-            recommended: ["Espeon", "Typhlosion", "Donphan", "Alakazam"],
-          },
-          {
-            name: "Elite 4 Bruno",
-            type: "Fighting",
-            badge: "E4",
-            cap: 62,
-            team: ["Hitmontop", "Hitmonlee", "Hitmonchan", "Onix", "Machamp"],
-            strategy: "Flying/Psychic sweep. Surf the Onix.",
-            recommended: ["Alakazam", "Lugia (if caught)", "Slowbro", "Crobat"],
-          },
-          {
-            name: "Elite 4 Karen",
-            type: "Dark",
-            badge: "E4",
-            cap: 62,
-            team: ["Umbreon", "Vileplume", "Gengar", "Murkrow", "Houndoom"],
-            strategy:
-              "Mixed team. Fighting for Umbreon/Houndoom. Psychic for Gengar/Vileplume. Electric for Murkrow.",
-            recommended: ["Heracross", "Machamp", "Espeon", "Ampharos"],
-          },
-        ],
-      };
-
-      const STORY_CHECKLISTS = {
-        Kanto: [
-          "Deliver Oak's Parcel (Viridian)",
-          "Defeat Brock (Pewter Gym)",
-          "Traverse Mt. Moon (Select Fossil)",
-          "Defeat Misty (Cerulean Gym)",
-          "Obtain Bicycle (Cerulean)",
-          "Help Bill (S.S. Ticket)",
-          "Defeat Lt. Surge (Vermilion Gym)",
-          "Obtain HM01 Cut (S.S. Anne)",
-          "Obtain HM05 Flash (Route 2 - Needs 10 Pokes)",
-          "Traverse Rock Tunnel",
-          "Obtain Eevee (Celadon Mansion)",
-          "Defeat Erika (Celadon Gym)",
-          "Clear Rocket Game Corner (Silph Scope)",
-          "Clear Pokemon Tower (Poke Flute)",
-          "Obtain Snorlax (Wake with Flute)",
-          "Obtain HM02 Fly (Route 16)",
-          "Defeat Koga (Fuchsia Gym)",
-          "Obtain HM03 Surf (Safari Zone)",
-          "Obtain HM04 Strength (Safari Zone)",
-          "Clear Silph Co. (Obtain Lapras & Master Ball)",
-          "Defeat Sabrina (Saffron Gym)",
-          "Obtain Hitmonlee/Hitmonchan (Fighting Dojo)",
-          "Defeat Blaine (Cinnabar Gym)",
-          "Defeat Giovanni (Viridian Gym)",
-          "Capture Zapdos (Power Plant - Optional)",
-          "Clear Victory Road",
-          "Capture Moltres (Victory Road - Optional)",
-          "Defeat Elite Four",
-        ],
-        Hoenn: [
-          "Meet May/Brendan (Route 103)",
-          "Defeat Roxanne (Rustboro Gym)",
-          "Obtain HM01 Cut (Rustboro)",
-          "Rescue Peeko (Rusturf Tunnel)",
-          "Defeat Brawly (Dewford Gym)",
-          "Deliver Letter to Steven (Granite Cave)",
-          "Deliver Goods to Capt. Stern (Slateport)",
-          "Defeat Wattson (Mauville Gym)",
-          "Obtain HM06 Rock Smash (Mauville)",
-          "Obtain Bicycle (Mauville)",
-          "Defeat Flannery (Lavaridge Gym)",
-          "Obtain Go-Goggles (Rival)",
-          "Defeat Norman (Petalburg Gym)",
-          "Obtain HM03 Surf (Wally's Dad)",
-          "Obtain Castform (Weather Institute)",
-          "Defeat Winona (Fortree Gym)",
-          "Obtain HM02 Fly (Rival - Route 119)",
-          "Clear Mt. Pyre (Team Magma/Aqua)",
-          "Clear Magma Hideout (Jagged Pass)",
-          "Clear Aqua Hideout (Obtain Master Ball)",
-          "Defeat Tate & Liza (Mossdeep Gym)",
-          "Obtain HM08 Dive (Steven's House)",
-          "Confront Teams (Seafloor Cavern)",
-          "Confront Groudon/Kyogre (Cave of Origin)",
-          "Defeat Juan (Sootopolis Gym)",
-          "Obtain HM07 Waterfall (Wallace)",
-          "Clear Victory Road",
-          "Defeat Elite Four",
-          "Obtain Beldum (Steven's House - Post Game)",
-        ],
-        Sinnoh: [
-          "Obtain Poketch (Jubilife)",
-          "Defeat Roark (Oreburgh Gym)",
-          "Obtain HM06 Rock Smash (Oreburgh Gate)",
-          "Clear Valley Windworks (Drifloon Fri)",
-          "Defeat Gardenia (Eterna Gym)",
-          "Obtain HM01 Cut (Cynthia)",
-          "Obtain Bicycle (Eterna)",
-          "Obtain Togepi Egg (Cynthia)",
-          "Defeat Fantina (Hearthome Gym)",
-          "Defeat Maylene (Veilstone Gym)",
-          "Obtain HM02 Fly (Galactic Warehouse)",
-          "Defeat Crasher Wake (Pastoria Gym)",
-          "Obtain SecretPotion (Cynthia)",
-          "Defeat Byron (Canalave Gym)",
-          "Obtain HM04 Strength (Iron Island)",
-          "Obtain Riolu Egg (Iron Island - Optional)",
-          "Events at Lake Valor/Verity/Acuity",
-          "Defeat Candice (Snowpoint Gym)",
-          "Obtain HM08 Rock Climb (Route 217)",
-          "Clear Galactic HQ (Veilstone)",
-          "Clear Spear Pillar (Distortion World)",
-          "Capture/Defeat Giratina",
-          "Defeat Volkner (Sunyshore Gym)",
-          "Obtain HM07 Waterfall (Jasmine)",
-          "Clear Victory Road",
-          "Defeat Elite Four",
-        ],
-        Unova: [
-          "Obtain Elemental Monkey (Dreamyard)",
-          "Defeat Trio Leaders (Striaton Gym)",
-          "Obtain HM01 Cut (Fennel)",
-          "Defeat Lenora (Nacrene Gym)",
-          "Clear Pinwheel Forest",
-          "Defeat Burgh (Castelia Gym)",
-          "Obtain Bicycle (Nimbasa)",
-          "Defeat Elesa (Nimbasa Gym)",
-          "Obtain HM04 Strength (Nimbasa)",
-          "Defeat Clay (Driftveil Gym)",
-          "Obtain Zorua (Driftveil - Optional)",
-          "Clear Chargestone Cave",
-          "Defeat Skyla (Mistralton Gym)",
-          "Obtain HM02 Fly (Prof Juniper)",
-          "Defeat Brycen (Icirrus Gym)",
-          "Dragonspiral Tower Events",
-          "Relic Castle Events (Obtain Stone)",
-          "Defeat Drayden/Iris (Opelucid Gym)",
-          "Clear Victory Road",
-          "Defeat Elite Four",
-          "N's Castle (Capture Reshiram/Zekrom)",
-          "Defeat N & Ghetsis",
-        ],
-        Johto: [
-          "Defeat Falkner (Violet Gym)",
-          "Obtain HM06 Rock Smash (Route 36)",
-          "Obtain Togepi Egg (Violet)",
-          "Defeat Bugsy (Azalea Gym)",
-          "Obtain HM01 Cut (Ilex Forest)",
-          "Clear Slowpoke Well",
-          "Defeat Whitney (Goldenrod Gym)",
-          "Obtain Squirtbottle (Goldenrod)",
-          "Obtain Eevee (Bill - Goldenrod)",
-          "Defeat Morty (Ecruteak Gym)",
-          "Obtain HM03 Surf (Ecruteak Theater)",
-          "Defeat Chuck (Cianwood Gym)",
-          "Obtain HM02 Fly (Cianwood)",
-          "Obtain SecretPotion (Cianwood)",
-          "Defeat Jasmine (Olivine Gym)",
-          "Defeat Pryce (Mahogany Gym)",
-          "Clear Lake of Rage (Capture Red Gyarados)",
-          "Clear Radio Tower (Team Rocket)",
-          "Defeat Clair (Blackthorn Gym)",
-          "Clear Dragon's Den (Obtain Dratini)",
-          "Obtain HM07 Waterfall (Ice Path)",
-          "Capture Ho-Oh/Lugia (Version Dependent)",
-          "Obtain Master Ball (Prof Elm)",
-          "Clear Victory Road",
-          "Defeat Elite Four",
-        ],
-      };
-
-      // Helper moved outside App
-      const getEvoString = (chain) => {
-        let str = [];
-        let curr = chain.chain;
-        while (curr) {
-          str.push(curr.species.name);
-          curr = curr.evolves_to[0];
-        }
-        return str;
-      };
-
-      // NEW: Nature Recommender Logic
-      const getRecommendedNatures = (stats) => {
-        const s = {};
-        stats.forEach((stat) => (s[stat.stat.name] = stat.base_stat));
-        const {
-          attack: atk,
-          "special-attack": spa,
-          speed: spe,
-          defense: def,
-          "special-defense": spd,
-        } = s;
-
-        const suggestions = [];
-
-        // Fast Sweepers (Speed > 80)
-        if (spe >= 80) {
-          if (atk > spa) suggestions.push("Jolly (+Spe)", "Adamant (+Atk)");
-          else if (spa > atk) suggestions.push("Timid (+Spe)", "Modest (+SpA)");
-          else suggestions.push("Naive (+Spe)", "Hasty (+Spe)"); // Mixed
-        }
-        // Bulky / Tanky (High Defenses)
-        else if (def >= 95 || spd >= 95) {
-          if (def >= spd)
-            suggestions.push(atk > spa ? "Impish (+Def)" : "Bold (+Def)");
-          else suggestions.push(atk > spa ? "Careful (+SpD)" : "Calm (+SpD)");
-
-          // Still suggest power for bulky attackers
-          if (atk > spa) suggestions.push("Adamant");
-          else if (spa > atk) suggestions.push("Modest");
-        }
-        // Slow Attackers / Trick Room
-        else {
-          if (atk > spa)
-            suggestions.push("Adamant (+Atk)", "Brave (+Atk, -Spe)");
-          else if (spa > atk)
-            suggestions.push("Modest (+SpA)", "Quiet (+SpA, -Spe)");
-          else suggestions.push("Brave", "Quiet");
-        }
-
-        return [...new Set(suggestions)].slice(0, 2).join(" / ");
-      };
-
-      // --- SUB-VIEWS (Moved Outside App) ---
-
-      const PokedexView = ({
-        searchQuery,
-        setSearchQuery,
-        searchPokemon,
-        loading,
-        error,
-        searchResult,
-        roster,
-        toggleRoster,
-        addToTeam,
-        allPokemon,
-        correctedName,
-      }) => {
-        const [suggestions, setSuggestions] = useState([]);
-        const [showSuggestions, setShowSuggestions] = useState(false);
-        const wrapperRef = useRef(null);
-
-        // Nature calculation
-        const natureSuggestion = useMemo(() => {
-          if (!searchResult) return "";
-          return getRecommendedNatures(searchResult.stats);
-        }, [searchResult]);
-
-        // Handle outside click to close suggestions
-        useEffect(() => {
-          const handleClickOutside = (event) => {
-            if (
-              wrapperRef.current &&
-              !wrapperRef.current.contains(event.target)
-            ) {
-              setShowSuggestions(false);
-            }
-          };
-          document.addEventListener("mousedown", handleClickOutside);
-          return () =>
-            document.removeEventListener("mousedown", handleClickOutside);
-        }, [wrapperRef]);
-
-        const handleInputChange = (e) => {
-          const value = e.target.value;
-          setSearchQuery(value);
-
-          if (value.length > 1 && allPokemon.length > 0) {
-            const lowerVal = value.toLowerCase();
-            // prioritization: startsWith > includes
-            const exactStarts = [];
-            const includes = [];
-
-            allPokemon.forEach((name) => {
-              if (name.startsWith(lowerVal)) exactStarts.push(name);
-              else if (name.includes(lowerVal)) includes.push(name);
-            });
-
-            setSuggestions([...exactStarts, ...includes].slice(0, 10)); // Limit to 10
-            setShowSuggestions(true);
-          } else {
-            setSuggestions([]);
-            setShowSuggestions(false);
-          }
+            return matrix[b.length][a.length];
         };
 
-        const selectSuggestion = (name) => {
-          setSearchQuery(name);
-          setShowSuggestions(false);
-          searchPokemon(null, name);
+        // --- INLINE ICONS (Replaces Lucide Dependency) ---
+        const Icon = ({ children, size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{children}</svg>
+        );
+        const Search = (p) => <Icon {...p}><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></Icon>;
+        const Book = (p) => <Icon {...p}><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></Icon>;
+        const MapIcon = (p) => <Icon {...p}><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" /><line x1="8" y1="2" x2="8" y2="18" /><line x1="16" y1="6" x2="16" y2="22" /></Icon>;
+        const Shield = (p) => <Icon {...p}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></Icon>;
+        const CheckSquare = (p) => <Icon {...p}><polyline points="9 11 12 14 22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></Icon>;
+        const Plus = (p) => <Icon {...p}><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></Icon>;
+        const X = (p) => <Icon {...p}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></Icon>;
+        const ExternalLink = (p) => <Icon {...p}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></Icon>;
+        const ChevronDown = (p) => <Icon {...p}><polyline points="6 9 12 15 18 9" /></Icon>;
+        const ChevronUp = (p) => <Icon {...p}><polyline points="18 15 12 9 6 15" /></Icon>;
+        const User = (p) => <Icon {...p}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></Icon>;
+        const Save = (p) => <Icon {...p}><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></Icon>;
+        const Info = (p) => <Icon {...p}><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></Icon>;
+        const Swords = (p) => <Icon {...p}><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5" /><line x1="13" y1="19" x2="19" y2="13" /><line x1="16" y1="16" x2="20" y2="20" /><line x1="19" y1="21" x2="21" y2="19" /><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5" /><line x1="16" y1="5" x2="20" y2="9" /><line x1="5" y1="16" x2="9" y2="20" /><line x1="3" y1="21" x2="5" y2="19" /></Icon>;
+        const Grid = (p) => <Icon {...p}><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></Icon>;
+        
+        // --- END ICONS ---
+
+        /* --- DATA CONSTANTS --- */
+        
+        const REGIONS = ['Kanto', 'Hoenn', 'Sinnoh', 'Unova', 'Johto'];
+        
+        const TYPE_WEAKNESS = {
+            normal: ['fighting'],
+            fire: ['water', 'ground', 'rock'],
+            water: ['electric', 'grass'],
+            electric: ['ground'],
+            grass: ['fire', 'ice', 'poison', 'flying', 'bug'],
+            ice: ['fire', 'fighting', 'rock', 'steel'],
+            fighting: ['flying', 'psychic', 'fairy'],
+            poison: ['ground', 'psychic'],
+            ground: ['water', 'grass', 'ice'],
+            flying: ['electric', 'ice', 'rock'],
+            psychic: ['bug', 'ghost', 'dark'],
+            bug: ['fire', 'flying', 'rock'],
+            rock: ['water', 'grass', 'fighting', 'ground', 'steel'],
+            ghost: ['ghost', 'dark'],
+            dragon: ['ice', 'dragon', 'fairy'],
+            dark: ['fighting', 'bug', 'fairy'],
+            steel: ['fire', 'fighting', 'ground'],
+            fairy: ['poison', 'steel']
         };
 
-        return (
-          <div className="space-y-6">
-            <div className="relative" ref={wrapperRef}>
-              <form onSubmit={(e) => searchPokemon(e)} className="flex gap-2">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={handleInputChange}
-                  onFocus={() =>
-                    searchQuery.length > 1 && setShowSuggestions(true)
-                  }
-                  placeholder="Enter Pokemon Name (e.g., Garchomp)"
-                  className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 text-lg relative z-10"
-                  autoComplete="off"
-                />
-                <button
-                  type="submit"
-                  className="bg-indigo-600 hover:bg-indigo-700 px-6 py-3 rounded-lg font-bold relative z-10"
-                >
-                  Search
-                </button>
-              </form>
+        // Full Gen 6+ Type Chart (PokeMMO Standard)
+        const TYPES = ['normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'];
+        
+        const TYPE_CHART = {
+            normal:   { rock: 0.5, ghost: 0, steel: 0.5 },
+            fire:     { fire: 0.5, water: 0.5, grass: 2, ice: 2, bug: 2, rock: 0.5, dragon: 0.5, steel: 2 },
+            water:    { fire: 2, water: 0.5, grass: 0.5, ground: 2, rock: 2, dragon: 0.5 },
+            electric: { water: 2, electric: 0.5, grass: 0.5, ground: 0, flying: 2, dragon: 0.5 },
+            grass:    { fire: 0.5, water: 2, grass: 0.5, poison: 0.5, ground: 2, flying: 0.5, bug: 0.5, rock: 2, dragon: 0.5, steel: 0.5 },
+            ice:      { fire: 0.5, water: 0.5, grass: 2, ice: 0.5, ground: 2, flying: 2, dragon: 2, steel: 0.5 },
+            fighting: { normal: 2, ice: 2, poison: 0.5, flying: 0.5, psychic: 0.5, bug: 0.5, rock: 2, ghost: 0, dark: 2, steel: 2, fairy: 0.5 },
+            poison:   { grass: 2, poison: 0.5, ground: 0.5, rock: 0.5, ghost: 0.5, steel: 0, fairy: 2 },
+            ground:   { fire: 2, electric: 2, grass: 0.5, poison: 2, flying: 0, bug: 0.5, rock: 2, steel: 2 },
+            flying:   { electric: 0.5, grass: 2, fighting: 2, bug: 2, rock: 0.5, steel: 0.5 },
+            psychic:  { fighting: 2, poison: 2, psychic: 0.5, dark: 0, steel: 0.5 },
+            bug:      { fire: 0.5, grass: 2, fighting: 0.5, poison: 0.5, flying: 0.5, psychic: 2, ghost: 0.5, dark: 2, steel: 0.5, fairy: 0.5 },
+            rock:     { fire: 2, ice: 2, fighting: 0.5, ground: 0.5, flying: 2, bug: 2, steel: 0.5 },
+            ghost:    { normal: 0, psychic: 2, ghost: 2, dark: 0.5 },
+            dragon:   { dragon: 2, steel: 0.5, fairy: 0 },
+            dark:     { fighting: 0.5, psychic: 2, ghost: 2, dark: 0.5, fairy: 0.5 },
+            steel:    { fire: 0.5, water: 0.5, electric: 0.5, ice: 2, rock: 2, steel: 0.5, fairy: 2 },
+            fairy:    { fire: 0.5, fighting: 2, poison: 0.5, dragon: 2, dark: 2, steel: 0.5 }
+        };
 
-              {/* Autocomplete Dropdown */}
-              {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto">
-                  {suggestions.map((name) => (
-                    <button
-                      key={name}
-                      onClick={() => selectSuggestion(name)}
-                      className="w-full text-left px-4 py-2 hover:bg-slate-700 text-slate-300 capitalize border-b border-slate-700/50 last:border-0"
-                    >
-                      {name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+        const getMultiplier = (atk, def) => {
+            if (TYPE_CHART[atk] && TYPE_CHART[atk][def] !== undefined) return TYPE_CHART[atk][def];
+            return 1;
+        };
 
-            {loading && (
-              <div className="text-center py-10 animate-pulse text-indigo-400">
-                Loading Pokedex Data...
-              </div>
-            )}
-            {error && (
-              <div className="text-center py-10 text-red-400 font-bold">
-                {error}
-              </div>
-            )}
+        const GYM_DATA = {
+            Kanto: [
+                { 
+                    name: "Brock", type: "Rock", badge: "Boulder", cap: 20, team: ["Geodude", "Onix"],
+                    strategy: "Rock/Ground is 4x weak to Grass and Water. Special attacks bypass their high Defense.",
+                    recommended: ["Bulbasaur", "Squirtle", "Mankey", "Nidoran"]
+                },
+                { 
+                    name: "Misty", type: "Water", badge: "Cascade", cap: 26, team: ["Staryu", "Starmie"],
+                    strategy: "Starmie is fast and has high Sp. Atk. Use Electric types or bulky Grass types that can resist Water Pulse.",
+                    recommended: ["Pikachu", "Oddish", "Bellsprout", "Ivysaur"]
+                },
+                { 
+                    name: "Lt. Surge", type: "Electric", badge: "Thunder", cap: 33, team: ["Voltorb", "Pikachu", "Raichu"],
+                    strategy: "Ground types are immune to Electric attacks. Diglett/Dugtrio outspeeds and KOs easily.",
+                    recommended: ["Diglett", "Geodude", "Sandshrew"]
+                },
+                { 
+                    name: "Erika", type: "Grass", badge: "Rainbow", cap: 40, team: ["Victreebel", "Tangela", "Vileplume"],
+                    strategy: "Fire and Flying types dominate here. Watch out for status powders (Sleep/Poison).",
+                    recommended: ["Charmeleon", "Growlithe", "Pidgeotto", "Fearow"]
+                },
+                { 
+                    name: "Koga", type: "Poison", badge: "Soul", cap: 46, team: ["Koffing", "Muk", "Koffing", "Weezing"],
+                    strategy: "Koga uses evasion and toxic tactics. Psychic and Ground types hit super effectively. Steel types are immune to Poison.",
+                    recommended: ["Kadabra", "Hypno", "Dugtrio", "Nidoking"]
+                },
+                { 
+                    name: "Sabrina", type: "Psychic", badge: "Marsh", cap: 50, team: ["Kadabra", "Mr. Mime", "Venomoth", "Alakazam"],
+                    strategy: "Physical attackers are best as Psychic types have low Defense. Snorlax (Shadow Ball) or fast Ghost types work well.",
+                    recommended: ["Snorlax", "Gengar", "Dodrio", "Scyther"]
+                },
+                { 
+                    name: "Blaine", type: "Fire", badge: "Volcano", cap: 55, team: ["Growlithe", "Ponyta", "Rapidash", "Arcanine"],
+                    strategy: "Rain Dance weakens Fire moves. Water, Ground, and Rock types are essential. Watch out for Solar Beam coverage.",
+                    recommended: ["Blastoise", "Gyarados", "Golem", "Omastar"]
+                },
+                { 
+                    name: "Giovanni", type: "Ground", badge: "Earth", cap: 62, team: ["Rhyhorn", "Dugtrio", "Nidoqueen", "Nidoking", "Rhydon"],
+                    strategy: "Water and Grass moves decimate his team. Ice Beam is also excellent for coverage against Nidos.",
+                    recommended: ["Starmie", "Lapras", "Exeggutor", "Vaporeon"]
+                },
+                { 
+                    name: "Elite 4 Lorelei", type: "Ice", badge: "E4", cap: 62, team: ["Dewgong", "Cloyster", "Slowbro", "Jynx", "Lapras"],
+                    strategy: "Electric types handle the Water/Ice hybrids. Use Fighting for Lapras/Cloyster/Dewgong.",
+                    recommended: ["Jolteon", "Magneton", "Machamp", "Hitmonlee"]
+                },
+                { 
+                    name: "Elite 4 Bruno", type: "Fighting", badge: "E4", cap: 62, team: ["Onix", "Hitmonchan", "Hitmonlee", "Onix", "Machamp"],
+                    strategy: "Flying and Psychic types sweep the fighters. Use Water/Grass for the two Onix.",
+                    recommended: ["Alakazam", "Starmie", "Pidgeot", "Slowbro"]
+                },
+                { 
+                    name: "Elite 4 Agatha", type: "Ghost", badge: "E4", cap: 62, team: ["Gengar", "Golbat", "Haunter", "Arbok", "Gengar"],
+                    strategy: "Her 'Ghosts' are mostly Poison type. Psychic moves are devastating. Ground works too.",
+                    recommended: ["Alakazam", "Hypno", "Mr. Mime", "Dugtrio"]
+                },
+                { 
+                    name: "Elite 4 Lance", type: "Dragon", badge: "E4", cap: 62, team: ["Gyarados", "Dragonair", "Dragonair", "Aerodactyl", "Dragonite"],
+                    strategy: "Ice Beam is mandatory for 4x damage on Dragonites. Electric for Gyarados/Aerodactyl.",
+                    recommended: ["Lapras", "Articuno", "Cloyster", "Jolteon"]
+                },
+            ],
+            Hoenn: [
+                { 
+                    name: "Roxanne", type: "Rock", badge: "Stone", cap: 20, team: ["Geodude", "Geodude", "Nosepass"],
+                    strategy: "Use Mudkip (Water) or Treecko (Grass). Shroomish (Absorb) is also a great early catch.",
+                    recommended: ["Marshtomp", "Grovyle", "Shroomish", "Wingull"]
+                },
+                { 
+                    name: "Brawly", type: "Fighting", badge: "Knuckle", cap: 24, team: ["Machop", "Meditite", "Makuhita"],
+                    strategy: "Ralts (Psychic) or Taillow/Wingull (Flying) make this fight trivial. Watch for Bulk Up.",
+                    recommended: ["Kirlia", "Swellow", "Pelipper", "Dustox"]
+                },
+                { 
+                    name: "Wattson", type: "Electric", badge: "Dynamo", cap: 28, team: ["Voltorb", "Electrike", "Magneton", "Manectric"],
+                    strategy: "Magneton resists almost everything. Use Ground types (Marshtomp/Geodude) or Fire/Fighting for Magneton.",
+                    recommended: ["Marshtomp", "Combusken", "Geodude", "Numel"]
+                },
+                { 
+                    name: "Flannery", type: "Fire", badge: "Heat", cap: 33, team: ["Numel", "Slugma", "Camerupt", "Torkoal"],
+                    strategy: "Rain Dance helps. Torkoal is tanky; Special Water attacks are best. Watch for Overheat.",
+                    recommended: ["Marshtomp", "Gyarados", "Tentacool", "Azumarill"]
+                },
+                { 
+                    name: "Norman", type: "Normal", badge: "Balance", cap: 38, team: ["Spinda", "Vigoroth", "Linoone", "Slaking"],
+                    strategy: "Slaking hits like a truck but skips every other turn (Truant). Use Protect/Detect on his attack turns.",
+                    recommended: ["Pelipper (Protect)", "Torkoal (Protect)", "Breloom", "Hariyama"]
+                },
+                { 
+                    name: "Winona", type: "Flying", badge: "Feather", cap: 44, team: ["Swablu", "Tropius", "Pelipper", "Skarmory", "Altaria"],
+                    strategy: "Altaria is Dragon/Flying (4x Ice weak). Skarmory needs Fire or Electric. Altaria can setup Dragon Dance.",
+                    recommended: ["Magneton", "Manectric", "Walrein", "Tentacruel (Ice Beam)"]
+                },
+                { 
+                    name: "Tate & Liza", type: "Psychic", badge: "Mind", cap: 48, team: ["Claydol", "Xatu", "Lunatone", "Solrock"],
+                    strategy: "Double Battle. Surf hits both foes. Dark types (Sharpedo/Absol) are immune to Psychic.",
+                    recommended: ["Swampert", "Sharpedo", "Cradily", "Absol"]
+                },
+                { 
+                    name: "Juan", type: "Water", badge: "Rain", cap: 58, team: ["Luvdisc", "Whiscash", "Sealeo", "Crawdaunt", "Kingdra"],
+                    strategy: "Kingdra (Water/Dragon) has only one weakness: Dragon (or Freeze Dry). Use neutral strong hits or status.",
+                    recommended: ["Manectric", "Ludicolo", "Gardevoir", "Breloom"]
+                },
+                { 
+                    name: "Elite 4 Sidney", type: "Dark", badge: "E4", cap: 58, team: ["Mightyena", "Shiftry", "Cacturne", "Crawdaunt", "Absol"],
+                    strategy: "Bug and Fighting moves sweep. Fast U-Turners or a strong Machamp work wonders.",
+                    recommended: ["Heracross", "Blaziken", "Machamp", "Gardevoir (Moonblast)"]
+                },
+                { 
+                    name: "Elite 4 Phoebe", type: "Ghost", badge: "E4", cap: 58, team: ["Dusclops", "Banette", "Sableye", "Banette", "Dusclops"],
+                    strategy: "Sableye has no weaknesses (Gen 3 logic). Use strong neutral hits. Dark types allow you to resist Shadow Ball.",
+                    recommended: ["Absol", "Sharpedo", "Mightyena", "Magneton"]
+                },
+                { 
+                    name: "Elite 4 Glacia", type: "Ice", badge: "E4", cap: 58, team: ["Sealeo", "Glalie", "Sealeo", "Glalie", "Walrein"],
+                    strategy: "Thick Fat Hariyama or Walrein mirrors work well. Electric hits the water hybrids hard.",
+                    recommended: ["Hariyama", "Manectric", "Metagross", "Aggron"]
+                },
+                { 
+                    name: "Elite 4 Drake", type: "Dragon", badge: "E4", cap: 58, team: ["Shelgon", "Altaria", "Kingdra", "Flygon", "Salamence"],
+                    strategy: "Ice Beam is essential (4x on Flygon/Mence/Altaria). Kingdra is the tanky outlier.",
+                    recommended: ["Walrein", "Starmie (Ice Beam)", "Gardevoir", "Flygon"]
+                },
+            ],
+            Sinnoh: [
+                { 
+                    name: "Roark", type: "Rock", badge: "Coal", cap: 20, team: ["Geodude", "Onix", "Cranidos"],
+                    strategy: "Monferno (Mach Punch) or Piplup (Bubble) sweep. Turtwig (Razor Leaf) also works.",
+                    recommended: ["Monferno", "Prinplup", "Budew", "Machop"]
+                },
+                { 
+                    name: "Gardenia", type: "Grass", badge: "Forest", cap: 26, team: ["Turtwig", "Cherrim", "Roserade"],
+                    strategy: "Staravia or Monferno dominate. Roserade hits hard, avoid using Water/Ground types.",
+                    recommended: ["Staravia", "Monferno", "Zubat", "Ponyta"]
+                },
+                { 
+                    name: "Fantina", type: "Ghost", badge: "Relic", cap: 33, team: ["Duskull", "Haunter", "Mismagius"],
+                    strategy: "Mismagius is fast and strong. Use Dark types (Bite) or Normal types to switch into Ghost moves.",
+                    recommended: ["Floatzel (Crunch)", "Luxio (Bite)", "Staravia", "Gyarados"]
+                },
+                { 
+                    name: "Maylene", type: "Fighting", badge: "Cobble", cap: 36, team: ["Meditite", "Machoke", "Lucario"],
+                    strategy: "Lucario is part Steel, so Fire or Ground works best. Flying handles the rest.",
+                    recommended: ["Staraptor", "Infernape", "Gastrodon", "Gligar"]
+                },
+                { 
+                    name: "Crasher Wake", type: "Water", badge: "Fen", cap: 39, team: ["Gyarados", "Quagsire", "Floatzel"],
+                    strategy: "Electric for Gyarados/Floatzel. Grass (4x) for Quagsire is mandatory.",
+                    recommended: ["Luxray", "Roserade", "Rotom", "Torterra"]
+                },
+                { 
+                    name: "Byron", type: "Steel", badge: "Mine", cap: 44, team: ["Magneton", "Steelix", "Bastiodon"],
+                    strategy: "Fire and Fighting/Ground types are key. Special attacks work better on Steelix/Bastiodon.",
+                    recommended: ["Infernape", "Gastrodon", "Garchomp", "Lucario"]
+                },
+                { 
+                    name: "Candice", type: "Ice", badge: "Icicle", cap: 48, team: ["Sneasel", "Piloswine", "Abomasnow", "Froslass"],
+                    strategy: "Froslass is Ghost/Ice (Fast). Abomasnow sets Hail (100% Blizzard acc). Change weather or use Fire.",
+                    recommended: ["Infernape", "Rapidash", "Lucario", "Staraptor"]
+                },
+                { 
+                    name: "Volkner", type: "Electric", badge: "Beacon", cap: 56, team: ["Jolteon", "Raichu", "Luxray", "Electivire"],
+                    strategy: "Ground types are immune. Electivire has coverage (Ice Punch), so be careful with Garchomp.",
+                    recommended: ["Garchomp", "Gastrodon", "Mamoswine", "Rhyperior"]
+                },
+                { 
+                    name: "Elite 4 Aaron", type: "Bug", badge: "E4", cap: 62, team: ["Yanmega", "Scizor", "Vespiquen", "Heracross", "Drapion"],
+                    strategy: "Rock (Stealth Rock) destroys Yanmega/Vespiquen. Fire for Scizor/Heracross. Drapion has no Bug weak.",
+                    recommended: ["Infernape", "Staraptor", "Rampardos", "Garchomp"]
+                },
+                { 
+                    name: "Elite 4 Bertha", type: "Ground", badge: "E4", cap: 62, team: ["Whiscash", "Gliscor", "Hippowdon", "Golem", "Rhyperior"],
+                    strategy: "Grass Knot / Energy Ball destroys her heavy team. Ice Beam for Gliscor.",
+                    recommended: ["Roserade", "Torterra", "Empoleon", "Floatzel (Ice Beam)"]
+                },
+                { 
+                    name: "Elite 4 Flint", type: "Fire", badge: "E4", cap: 62, team: ["Houndoom", "Flareon", "Rapidash", "Infernape", "Magmortar"],
+                    strategy: "Fast Water types or Earth Power users. Be careful of Solar Beam/Thunder Punch coverage.",
+                    recommended: ["Garchomp", "Gyarados", "Floatzel", "Gastrodon"]
+                },
+                { 
+                    name: "Elite 4 Lucian", type: "Psychic", badge: "E4", cap: 62, team: ["Mr. Mime", "Espeon", "Bronzong", "Alakazam", "Gallade"],
+                    strategy: "Bronzong usually Levitates (Fire weak). Dark types generally wall him, but watch for Gallade (Fighting).",
+                    recommended: ["Weavile", "Spiritomb", "Houndoom", "Garchomp"]
+                },
+            ],
+            Unova: [
+                 { 
+                     name: "Trio Leaders", type: "Mix", badge: "Trio", cap: 20, team: ["Lilipup", "Elemental Monkey"],
+                     strategy: "You face the type strong against your starter. Use the Monkey you got in Dreamyard.",
+                     recommended: ["Pansear", "Pansage", "Panpour", "Roggenrola"]
+                 },
+                 { 
+                     name: "Lenora", type: "Normal", badge: "Basic", cap: 24, team: ["Herdier", "Watchog"],
+                     strategy: "Watchog uses Retaliate (High damage) and Hypnosis. Use Fighting types (Timburr/Sawk/Throh).",
+                     recommended: ["Sawk", "Throh", "Timburr", "Scraggy"]
+                 },
+                 { 
+                     name: "Burgh", type: "Bug", badge: "Insect", cap: 27, team: ["Whirlipede", "Dwebble", "Leavanny"],
+                     strategy: "Dwebble sets hazards. Leavanny is 4x weak to Fire and Flying. Use Darumaka.",
+                     recommended: ["Darumaka", "Sigilyph", "Pignite", "Tranquill"]
+                 },
+                 { 
+                     name: "Elesa", type: "Electric", badge: "Bolt", cap: 31, team: ["Emolga", "Emolga", "Zebstrika"],
+                     strategy: "Volt Switch spam. Emolga is immune to Ground. Use Rock types (Roggenrola) or Sandile.",
+                     recommended: ["Sandile", "Boldore", "Excadrill", "Zebstrika (LightningRod)"]
+                 },
+                 { 
+                     name: "Clay", type: "Ground", badge: "Quake", cap: 35, team: ["Krokorok", "Palpitoad", "Excadrill"],
+                     strategy: "Excadrill is incredibly strong. Water or Fighting types are best. Palpitoad is Water/Ground (4x Grass).",
+                     recommended: ["Dewott", "Lilligant", "Deerling", "Conkeldurr"]
+                 },
+                 { 
+                     name: "Skyla", type: "Flying", badge: "Jet", cap: 40, team: ["Swoobat", "Unfezant", "Swanna"],
+                     strategy: "Electric types sweep. Rock is good but Swoobat has Energy Ball. Swanna is 4x Electric weak.",
+                     recommended: ["Galvantula", "Zebstrika", "Archeops", "Gigalith"]
+                 },
+                 { 
+                     name: "Brycen", type: "Ice", badge: "Freeze", cap: 44, team: ["Vanillish", "Cryogonal", "Beartic"],
+                     strategy: "Cryogonal has huge Sp. Def but paper Defense. Use Physical Fighting or Fire moves.",
+                     recommended: ["Conkeldurr", "Darmanitan", "Scrafty", "Chandelure"]
+                 },
+                 { 
+                     name: "Drayden/Iris", type: "Dragon", badge: "Legend", cap: 48, team: ["Fraxure", "Druddigon", "Haxorus"],
+                     strategy: "Dragon Dance Haxorus is a run killer. Burn it, or KO it fast with Ice Beam/Dragon Claw.",
+                     recommended: ["Haxorus", "Beartic", "Vanilluxe", "Ferrothorn (Wall)"]
+                 },
+                 { 
+                     name: "Elite 4 Shauntal", type: "Ghost", badge: "E4", cap: 56, team: ["Cofagrigus", "Jellicent", "Golurk", "Chandelure"],
+                     strategy: "Chandelure hits massive Sp. Atk. Dark types (Krookodile) do well. Water for Golurk/Chandelure.",
+                     recommended: ["Krookodile", "Bisharp", "Samurott", "Hydreigon"]
+                 },
+                 { 
+                     name: "Elite 4 Grimsley", type: "Dark", badge: "E4", cap: 56, team: ["Scrafty", "Krookodile", "Liepard", "Bisharp"],
+                     strategy: "Fighting types destroy 3/4 of his team. Scrafty is 4x weak to Fairy (if available) or Flying.",
+                     recommended: ["Conkeldurr", "Mienshao", "Lucario", "Scrafty"]
+                 },
+                 { 
+                     name: "Elite 4 Caitlin", type: "Psychic", badge: "E4", cap: 56, team: ["Reuniclus", "Sigilyph", "Musharna", "Gothitelle"],
+                     strategy: "Trick Room or Defensive setup. Bug and Ghost are great. Volcarona sets up well here.",
+                     recommended: ["Volcarona", "Chandelure", "Escavalier", "Krookodile"]
+                 },
+                 { 
+                     name: "Elite 4 Marshal", type: "Fighting", badge: "E4", cap: 56, team: ["Throh", "Sawk", "Conkeldurr", "Mienshao"],
+                     strategy: "Physical tanks. Many have Stone Edge for flyers. Reuniclus or Sigilyph work well.",
+                     recommended: ["Reuniclus", "Sigilyph", "Archeops", "Golurk"]
+                 },
+            ],
+            Johto: [
+                "Defeat Falkner (Violet Gym)",
+                "Obtain HM06 Rock Smash (Route 36)",
+                "Obtain Togepi Egg (Violet)",
+                "Defeat Bugsy (Azalea Gym)",
+                "Obtain HM01 Cut (Ilex Forest)",
+                "Clear Slowpoke Well",
+                "Defeat Whitney (Goldenrod Gym)",
+                "Obtain Squirtbottle (Goldenrod)",
+                "Obtain Eevee (Bill - Goldenrod)",
+                "Defeat Morty (Ecruteak Gym)",
+                "Obtain HM03 Surf (Ecruteak Theater)",
+                "Defeat Chuck (Cianwood Gym)",
+                "Obtain HM02 Fly (Cianwood)",
+                "Obtain SecretPotion (Cianwood)",
+                "Defeat Jasmine (Olivine Gym)",
+                "Defeat Pryce (Mahogany Gym)",
+                "Clear Lake of Rage (Capture Red Gyarados)",
+                "Clear Radio Tower (Team Rocket)",
+                "Defeat Clair (Blackthorn Gym)",
+                "Clear Dragon's Den (Obtain Dratini)",
+                "Obtain HM07 Waterfall (Ice Path)",
+                "Capture Ho-Oh/Lugia (Version Dependent)",
+                "Obtain Master Ball (Prof Elm)",
+                "Clear Victory Road",
+                "Defeat Elite Four"
+            ]
+        };
 
-            {/* Typo Correction Notification */}
-            {correctedName && !loading && !error && (
-              <div className="bg-yellow-500/10 border border-yellow-500/50 text-yellow-200 px-4 py-2 rounded-lg text-sm text-center">
-                Auto-corrected to{" "}
-                <span className="font-bold capitalize">{correctedName}</span>
-              </div>
-            )}
+        // Helper moved outside App
+        const getEvoString = (chain) => {
+            let str = [];
+            let curr = chain.chain;
+            while (curr) {
+                str.push(curr.species.name);
+                curr = curr.evolves_to[0];
+            }
+            return str;
+        };
 
-            {searchResult && (
-              <div className="bg-slate-800 rounded-xl overflow-hidden border border-slate-700 shadow-2xl">
-                {/* Header */}
-                <div className="bg-slate-900 p-6 flex items-center justify-between">
-                  <div>
-                    <h2 className="text-3xl font-bold capitalize text-white">
-                      {searchResult.name}
-                    </h2>
-                    <div className="flex gap-2 mt-2">
-                      {searchResult.types.map((t) => (
-                        <span
-                          key={t.type.name}
-                          className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider type-${t.type.name}`}
-                        >
-                          {t.type.name}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="text-slate-400 text-right mono text-sm">
-                    #{String(searchResult.id).padStart(3, "0")}
-                    <br />
-                    Ht: {searchResult.height / 10}m | Wt:{" "}
-                    {searchResult.weight / 10}kg
-                  </div>
-                </div>
+        // NEW: Nature Recommender Logic
+        const getRecommendedNatures = (stats) => {
+            const s = {};
+            stats.forEach(stat => s[stat.stat.name] = stat.base_stat);
+            const { attack: atk, 'special-attack': spa, speed: spe, defense: def, 'special-defense': spd } = s;
+            
+            const suggestions = [];
+            
+            // Fast Sweepers (Speed > 80)
+            if (spe >= 80) {
+                if (atk > spa) suggestions.push("Jolly (+Spe)", "Adamant (+Atk)");
+                else if (spa > atk) suggestions.push("Timid (+Spe)", "Modest (+SpA)");
+                else suggestions.push("Naive (+Spe)", "Hasty (+Spe)"); // Mixed
+            } 
+            // Bulky / Tanky (High Defenses)
+            else if (def >= 95 || spd >= 95) {
+                if (def >= spd) suggestions.push(atk > spa ? "Impish (+Def)" : "Bold (+Def)");
+                else suggestions.push(atk > spa ? "Careful (+SpD)" : "Calm (+SpD)");
+                
+                // Still suggest power for bulky attackers
+                if (atk > spa) suggestions.push("Adamant");
+                else if (spa > atk) suggestions.push("Modest");
+            } 
+            // Slow Attackers / Trick Room
+            else {
+                if (atk > spa) suggestions.push("Adamant (+Atk)", "Brave (+Atk, -Spe)");
+                else if (spa > atk) suggestions.push("Modest (+SpA)", "Quiet (+SpA, -Spe)");
+                else suggestions.push("Brave", "Quiet");
+            }
+            
+            return [...new Set(suggestions)].slice(0, 2).join(" / ");
+        };
 
-                <div className="grid md:grid-cols-2 gap-0">
-                  {/* Left: Sprite & Actions */}
-                  <div className="p-8 flex flex-col items-center justify-center bg-slate-800/50 border-r border-slate-700">
-                    <img
-                      src={
-                        searchResult.sprites.other["official-artwork"]
-                          .front_default || searchResult.sprites.front_default
-                      }
-                      alt={searchResult.name}
-                      className="w-48 h-48 object-contain drop-shadow-lg"
-                    />
-                    <div className="mt-6 flex gap-3 w-full max-w-xs">
-                      <button
-                        onClick={() =>
-                          toggleRoster(
-                            searchResult.name,
-                            searchResult.sprites.front_default
-                          )
-                        }
-                        className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg font-bold transition-all ${
-                          roster[searchResult.name]
-                            ? "bg-green-600 text-white"
-                            : "bg-slate-700 text-slate-300 hover:bg-slate-600"
-                        }`}
-                      >
-                        {roster[searchResult.name] ? (
-                          <CheckSquare size={18} />
+        // --- SUB-VIEWS (Moved Outside App) ---
+
+        // NEW: Type Matrix & Calculator View
+        const TypeMatrixView = () => {
+            const [selectedDetail, setSelectedDetail] = useState(null); // { type: 'fire', mode: 'offense' | 'defense' }
+
+            // Detail Panel Logic
+            const detailData = useMemo(() => {
+                if (!selectedDetail) return null;
+                const { type, mode } = selectedDetail;
+                const data = { 4: [], 2: [], 1: [], 0.5: [], 0.25: [], 0: [] };
+
+                if (mode === 'defense') {
+                    // Check what attacks hit THIS type
+                    TYPES.forEach(atk => {
+                        const m = getMultiplier(atk, type);
+                        if (data[m]) data[m].push(atk);
+                    });
+                } else {
+                    // Check what THIS type hits
+                    TYPES.forEach(def => {
+                        const m = getMultiplier(type, def);
+                        if (data[m]) data[m].push(def);
+                    });
+                }
+                return data;
+            }, [selectedDetail]);
+
+            return (
+                <div className="space-y-6">
+                    {/* Detail Panel */}
+                    <div className="bg-slate-800 rounded-xl border border-slate-700 p-6 min-h-[200px]">
+                        {!selectedDetail ? (
+                            <div className="h-full flex flex-col items-center justify-center text-slate-500 text-center opacity-75">
+                                <Grid size={48} className="mb-4 text-slate-600" />
+                                <p className="text-lg font-bold">Interactive Type Matrix</p>
+                                <p className="text-sm mt-2 max-w-md">
+                                    Click a <span className="text-indigo-400 font-bold">Row Header</span> (Left) to see attacking strengths.<br/>
+                                    Click a <span className="text-pink-400 font-bold">Column Header</span> (Top) to see defensive weaknesses.
+                                </p>
+                            </div>
                         ) : (
-                          <Plus size={18} />
+                            <div className="animate-fade-in">
+                                <div className="flex items-center justify-between mb-6">
+                                    <div className="flex items-center gap-3">
+                                        <div className={`px-4 py-1 rounded text-xl font-bold uppercase type-${selectedDetail.type} text-white`} style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
+                                            {selectedDetail.type}
+                                        </div>
+                                        <span className="text-slate-400 font-mono uppercase tracking-wider text-sm">
+                                            {selectedDetail.mode === 'offense' ? 'Offensive Profile' : 'Defensive Profile'}
+                                        </span>
+                                    </div>
+                                    <button onClick={() => setSelectedDetail(null)} className="text-slate-500 hover:text-white">
+                                        <X size={20} />
+                                    </button>
+                                </div>
+
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    {/* Bad News (Weaknesses / Not Effective) */}
+                                    <div className="bg-slate-900/50 rounded-lg p-4 border border-red-500/20">
+                                        <h3 className="text-red-400 font-bold mb-3 flex items-center gap-2">
+                                            <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                                            {selectedDetail.mode === 'defense' ? 'Weak To (2x)' : 'Not Very Effective Against (0.5x)'}
+                                        </h3>
+                                        <div className="flex flex-wrap gap-2 mb-4">
+                                            {detailData[selectedDetail.mode === 'defense' ? 2 : 0.5]?.length > 0 ? (
+                                                detailData[selectedDetail.mode === 'defense' ? 2 : 0.5].map(t => (
+                                                    <span key={t} className={`px-2 py-1 rounded text-xs font-bold uppercase type-${t}`} style={{color: ['electric','steel','ice','normal','flying'].includes(t) ? 'black' : 'white'}}>{t}</span>
+                                                ))
+                                            ) : <span className="text-slate-600 text-xs italic">None</span>}
+                                        </div>
+
+                                        <h3 className="text-slate-400 font-bold mb-3 flex items-center gap-2 mt-6">
+                                            <div className="w-2 h-2 rounded-full bg-slate-600"></div>
+                                            {selectedDetail.mode === 'defense' ? 'Immune To (0x)' : 'No Effect Against (0x)'}
+                                        </h3>
+                                        <div className="flex flex-wrap gap-2">
+                                            {detailData[0]?.length > 0 ? (
+                                                detailData[0].map(t => (
+                                                    <span key={t} className={`px-2 py-1 rounded text-xs font-bold uppercase type-${t}`} style={{color: ['electric','steel','ice','normal','flying'].includes(t) ? 'black' : 'white'}}>{t}</span>
+                                                ))
+                                            ) : <span className="text-slate-600 text-xs italic">None</span>}
+                                        </div>
+                                    </div>
+
+                                    {/* Good News (Resistances / Super Effective) */}
+                                    <div className="bg-slate-900/50 rounded-lg p-4 border border-green-500/20">
+                                        <h3 className="text-green-400 font-bold mb-3 flex items-center gap-2">
+                                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                            {selectedDetail.mode === 'defense' ? 'Resists (0.5x)' : 'Super Effective Against (2x)'}
+                                        </h3>
+                                        <div className="flex flex-wrap gap-2">
+                                            {detailData[selectedDetail.mode === 'defense' ? 0.5 : 2]?.length > 0 ? (
+                                                detailData[selectedDetail.mode === 'defense' ? 0.5 : 2].map(t => (
+                                                    <span key={t} className={`px-2 py-1 rounded text-xs font-bold uppercase type-${t}`} style={{color: ['electric','steel','ice','normal','flying'].includes(t) ? 'black' : 'white'}}>{t}</span>
+                                                ))
+                                            ) : <span className="text-slate-600 text-xs italic">None</span>}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         )}
-                        {roster[searchResult.name] ? "Caught" : "Roster"}
-                      </button>
-                      <a
-                        href={`https://pokemmo.shoutwiki.com/wiki/${searchResult.name}`}
-                        target="_blank"
-                        className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold"
-                      >
-                        <ExternalLink size={18} /> Wiki
-                      </a>
-                    </div>
-                    <div className="mt-4 grid grid-cols-5 gap-1 w-full max-w-xs">
-                      {REGIONS.map((r) => (
-                        <button
-                          key={r}
-                          onClick={() =>
-                            addToTeam(
-                              r,
-                              searchResult.name,
-                              searchResult.sprites.front_default
-                            )
-                          }
-                          className="bg-slate-700 hover:bg-indigo-600 text-[10px] py-1 rounded text-center truncate"
-                          title={`Add to ${r} Team`}
-                        >
-                          +{r[0]}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Right: Stats & Info */}
-                  <div className="p-6 space-y-6">
-                    {/* Stats */}
-                    <div>
-                      <h3 className="text-slate-400 uppercase text-xs font-bold tracking-wider mb-3">
-                        Base Stats
-                      </h3>
-                      <div className="space-y-2">
-                        {searchResult.stats.map((s) => (
-                          <div
-                            key={s.stat.name}
-                            className="flex items-center text-sm"
-                          >
-                            <span className="w-24 capitalize text-slate-300 truncate">
-                              {s.stat.name.replace("-", " ")}
-                            </span>
-                            <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
-                              <div
-                                className="h-full bg-indigo-500"
-                                style={{
-                                  width: `${Math.min(
-                                    100,
-                                    (s.base_stat / 255) * 100
-                                  )}%`,
-                                }}
-                              ></div>
-                            </div>
-                            <span className="w-10 text-right mono font-bold">
-                              {s.base_stat}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
                     </div>
 
-                    {/* Nature Recommendation - ADDED HERE */}
-                    <div className="bg-indigo-900/30 border border-indigo-500/30 p-3 rounded-lg">
-                      <h3 className="text-indigo-400 uppercase text-xs font-bold tracking-wider mb-1">
-                        Recommended Natures
-                      </h3>
-                      <p className="text-sm font-mono text-white">
-                        {natureSuggestion}
-                      </p>
-                    </div>
+                    {/* Matrix */}
+                    <div className="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow-2xl">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-center text-xs border-collapse">
+                                <thead>
+                                    <tr>
+                                        <th className="p-2 bg-slate-900 sticky left-0 z-10 text-slate-500 font-mono text-[10px] uppercase border-b border-r border-slate-700">
+                                            Def &rarr;<br/>Atk &darr;
+                                        </th>
+                                        {TYPES.map(t => (
+                                            <th 
+                                                key={t} 
+                                                onClick={() => setSelectedDetail({ type: t, mode: 'defense' })}
+                                                className={`p-1 min-w-[36px] bg-slate-900 border-b border-slate-700 cursor-pointer hover:bg-pink-900/30 transition-colors group ${selectedDetail?.type === t && selectedDetail?.mode === 'defense' ? 'bg-pink-900/50' : ''}`}
+                                                title={`Click to see defensive profile for ${t}`}
+                                            >
+                                                <div className="[writing-mode:vertical-lr] h-24 flex items-center justify-center uppercase tracking-widest text-[10px] text-slate-400 group-hover:text-pink-300">
+                                                    {t.substring(0,3)}
+                                                </div>
+                                            </th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {TYPES.map(atk => (
+                                        <tr key={atk} className="hover:bg-slate-700/30 transition-colors">
+                                            <th 
+                                                onClick={() => setSelectedDetail({ type: atk, mode: 'offense' })}
+                                                className={`p-2 bg-slate-900 sticky left-0 z-10 text-right uppercase text-[10px] font-bold text-slate-300 border-r border-slate-700 cursor-pointer hover:bg-indigo-900/50 transition-colors hover:text-indigo-300 ${selectedDetail?.type === atk && selectedDetail?.mode === 'offense' ? 'bg-indigo-900/50 text-indigo-300' : ''}`}
+                                                title={`Click to see offensive profile for ${atk}`}
+                                            >
+                                                {atk.substring(0,3)}
+                                            </th>
+                                            {TYPES.map(def => {
+                                                const m = getMultiplier(atk, def);
+                                                let bg = "";
+                                                let text = "";
+                                                if (m === 2) { bg = "bg-green-500/20 text-green-400 font-bold"; text = "2"; }
+                                                if (m === 0.5) { bg = "bg-red-500/10 text-red-400"; text = "½"; }
+                                                if (m === 0) { bg = "bg-slate-950 text-slate-600 font-mono"; text = "0"; }
+                                                
+                                                // Highlight intersection if something is selected
+                                                const isRowSelected = selectedDetail?.mode === 'offense' && selectedDetail.type === atk;
+                                                const isColSelected = selectedDetail?.mode === 'defense' && selectedDetail.type === def;
+                                                const isHighlighted = isRowSelected || isColSelected;
 
-                    {/* Weaknesses */}
-                    <div>
-                      <h3 className="text-slate-400 uppercase text-xs font-bold tracking-wider mb-2">
-                        Weak To
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {searchResult.weaknesses &&
-                          searchResult.weaknesses.map((w) => (
-                            <span
-                              key={w}
-                              className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider type-${w}`}
-                            >
-                              {w}
-                            </span>
-                          ))}
-                      </div>
-                    </div>
-
-                    {/* Evolution */}
-                    <div>
-                      <h3 className="text-slate-400 uppercase text-xs font-bold tracking-wider mb-2">
-                        Evolution
-                      </h3>
-                      <div className="flex flex-wrap gap-2 text-sm text-slate-300">
-                        {getEvoString(searchResult.evoChain).map((name, i) => (
-                          <span key={name} className="flex items-center">
-                            {i > 0 && (
-                              <span className="mx-2 text-slate-500">→</span>
-                            )}
-                            <span
-                              className={`capitalize ${
-                                name === searchResult.name
-                                  ? "text-indigo-400 font-bold"
-                                  : ""
-                              }`}
-                            >
-                              {name}
-                            </span>
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <h3 className="text-slate-400 uppercase text-xs font-bold tracking-wider mb-1">
-                        PokeMMO Note
-                      </h3>
-                      <p className="text-xs text-slate-400 leading-relaxed">
-                        Moves and Locations in PokeMMO may differ from base
-                        games. Check the Wiki link for specific Route data and
-                        Horde encounters.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      };
-
-      const TrainerView = () => {
-        const [selectedRegion, setSelectedRegion] = useState("Kanto");
-
-        return (
-          <div className="space-y-6">
-            <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide">
-              {REGIONS.map((r) => (
-                <button
-                  key={r}
-                  onClick={() => setSelectedRegion(r)}
-                  className={`px-6 py-2 rounded-full font-bold whitespace-nowrap transition-colors ${
-                    selectedRegion === r
-                      ? "bg-indigo-600 text-white"
-                      : "bg-slate-800 text-slate-400 hover:bg-slate-700"
-                  }`}
-                >
-                  {r}
-                </button>
-              ))}
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              {GYM_DATA[selectedRegion].map((gym, idx) => (
-                <div
-                  key={idx}
-                  className="bg-slate-800 border border-slate-700 rounded-lg p-5 hover:border-indigo-500/50 transition-colors"
-                >
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="text-lg font-bold text-white">
-                        {gym.name}
-                      </h3>
-                      <div className="text-xs text-slate-400 uppercase tracking-wider">
-                        {gym.badge} Badge
-                      </div>
-                    </div>
-                    <div
-                      className={`px-2 py-1 rounded text-xs font-bold uppercase type-${gym.type.toLowerCase()}`}
-                    >
-                      {gym.type}
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 text-sm text-yellow-400 font-mono bg-yellow-400/10 px-3 py-1.5 rounded">
-                      <Shield size={14} />
-                      <span>Level Cap: {gym.cap}</span>
-                    </div>
-
-                    <div>
-                      <p className="text-xs text-slate-500 uppercase font-bold mb-2">
-                        Ace Pokemon
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {gym.team.map((poke, i) => (
-                          <span
-                            key={i}
-                            className="text-sm bg-slate-900 px-2 py-1 rounded text-slate-300"
-                          >
-                            {poke}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <details className="group">
-                      <summary className="flex items-center gap-2 cursor-pointer text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors list-none select-none">
-                        <div className="bg-slate-900 p-1 rounded group-open:rotate-90 transition-transform">
-                          <Swords size={12} />
+                                                return (
+                                                    <td key={def} className={`p-1 border border-slate-700/30 ${bg} ${isHighlighted ? 'brightness-125 ring-1 ring-inset ring-white/10' : ''}`}>
+                                                        {text}
+                                                    </td>
+                                                );
+                                            })}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
-                        Battle Tips & Strategy
-                      </summary>
-                      <div className="mt-3 text-sm text-slate-300 bg-slate-900/50 p-3 rounded border border-slate-700 space-y-3">
-                        <p className="leading-relaxed">
-                          <span className="text-indigo-400 font-bold">
-                            Strategy:
-                          </span>{" "}
-                          {gym.strategy}
-                        </p>
-                        <div>
-                          <span className="text-green-400 font-bold text-xs uppercase tracking-wider">
-                            Recommended
-                          </span>
-                          <div className="flex flex-wrap gap-2 mt-1">
-                            {gym.recommended.map((rec, i) => (
-                              <span
-                                key={i}
-                                className="bg-slate-800 border border-slate-600 px-2 py-1 rounded text-xs text-slate-300"
-                              >
-                                {rec}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </details>
-                  </div>
+                    </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        );
-      };
-
-      const TeamView = ({ teams, removeFromTeam }) => (
-        <div className="space-y-8">
-          <div className="bg-indigo-900/30 border border-indigo-500/30 p-4 rounded-lg flex items-start gap-3">
-            <Info className="text-indigo-400 flex-shrink-0 mt-0.5" size={20} />
-            <p className="text-sm text-indigo-200">
-              Build your dream team for each region! Search for Pokemon in the
-              Pokedex tab and click "+K", "+H", etc. to add them here.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-            {REGIONS.map((region) => (
-              <div
-                key={region}
-                className="bg-slate-800 rounded-xl border border-slate-700 flex flex-col"
-              >
-                <div className="p-4 border-b border-slate-700 bg-slate-900/50 rounded-t-xl">
-                  <h3 className="font-bold text-center text-indigo-300">
-                    {region} Team
-                  </h3>
-                  <p className="text-center text-xs text-slate-500 mt-1">
-                    {teams[region]?.length || 0} / 6
-                  </p>
-                </div>
-                <div className="p-2 space-y-2 flex-1">
-                  {(teams[region] || []).map((member) => (
-                    <div
-                      key={member.id}
-                      className="flex items-center gap-3 bg-slate-700/50 p-2 rounded-lg group"
-                    >
-                      <img
-                        src={member.sprite}
-                        alt={member.name}
-                        className="w-10 h-10 pixelated"
-                      />
-                      <span className="flex-1 text-sm font-medium capitalize truncate">
-                        {member.name}
-                      </span>
-                      <button
-                        onClick={() => removeFromTeam(region, member.id)}
-                        className="text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X size={16} />
-                      </button>
-                    </div>
-                  ))}
-                  {(!teams[region] || teams[region].length === 0) && (
-                    <div className="h-32 flex flex-col items-center justify-center text-slate-600 text-xs italic border-2 border-dashed border-slate-700 rounded-lg m-2">
-                      <span>Empty Slots</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-
-      const GuideView = ({ checklist, toggleChecklist }) => {
-        const [openRegion, setOpenRegion] = useState(null);
-
-        const progress = useMemo(() => {
-          const stats = {};
-          REGIONS.forEach((r) => {
-            const total = STORY_CHECKLISTS[r].length;
-            const done = STORY_CHECKLISTS[r].filter(
-              (_, i) => checklist[`${r}_${i}`]
-            ).length;
-            stats[r] = Math.round((done / total) * 100);
-          });
-          return stats;
-        }, [checklist]);
-
-        return (
-          <div className="max-w-3xl mx-auto space-y-4">
-            {REGIONS.map((region) => (
-              <div
-                key={region}
-                className="bg-slate-800 rounded-lg overflow-hidden border border-slate-700"
-              >
-                <button
-                  onClick={() =>
-                    setOpenRegion(openRegion === region ? null : region)
-                  }
-                  className="w-full flex items-center justify-between p-5 hover:bg-slate-700 transition-colors"
-                >
-                  <div className="flex items-center gap-4">
-                    <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold bg-slate-900 border-2 ${
-                        progress[region] === 100
-                          ? "border-green-500 text-green-500"
-                          : "border-indigo-500 text-indigo-500"
-                      }`}
-                    >
-                      {region[0]}
-                    </div>
-                    <div className="text-left">
-                      <h3 className="text-lg font-bold">{region} Story</h3>
-                      <div className="flex items-center gap-2 mt-1">
-                        <div className="w-24 h-1.5 bg-slate-900 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-green-500 transition-all duration-500"
-                            style={{ width: `${progress[region]}%` }}
-                          ></div>
-                        </div>
-                        <span className="text-xs text-slate-400">
-                          {progress[region]}% Complete
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  {openRegion === region ? (
-                    <ChevronUp className="text-slate-400" />
-                  ) : (
-                    <ChevronDown className="text-slate-400" />
-                  )}
-                </button>
-
-                {openRegion === region && (
-                  <div className="bg-slate-900/50 border-t border-slate-700 p-4">
-                    <div className="space-y-1">
-                      {STORY_CHECKLISTS[region].map((step, idx) => {
-                        const key = `${region}_${idx}`;
-                        return (
-                          <label
-                            key={idx}
-                            className="flex items-start gap-3 p-3 hover:bg-slate-800 rounded cursor-pointer transition-colors group"
-                          >
-                            <div
-                              onClick={() => toggleChecklist(key)}
-                              className={`mt-0.5 w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${
-                                checklist[key]
-                                  ? "bg-green-600 border-green-600"
-                                  : "border-slate-600 group-hover:border-slate-400"
-                              }`}
-                            >
-                              {checklist[key] && (
-                                <CheckSquare size={14} className="text-white" />
-                              )}
-                            </div>
-                            <span
-                              className={`text-sm select-none ${
-                                checklist[key]
-                                  ? "text-slate-500 line-through"
-                                  : "text-slate-200"
-                              }`}
-                            >
-                              {step}
-                            </span>
-                          </label>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        );
-      };
-
-      const RosterView = ({ roster, toggleRoster, setView }) => {
-        const caughtList = Object.entries(roster).filter(
-          ([_, caught]) => caught
-        );
-        const caughtCount = caughtList.length;
-
-        return (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between bg-slate-800 p-6 rounded-xl border border-slate-700">
-              <div>
-                <h2 className="text-2xl font-bold text-white">
-                  Living Dex Tracker
-                </h2>
-                <p className="text-slate-400 mt-1">
-                  Track your caught unique species across all regions.
-                </p>
-              </div>
-              <div className="text-right">
-                <div className="text-4xl font-bold text-indigo-400 mono">
-                  {caughtCount}
-                </div>
-                <div className="text-xs text-slate-500 uppercase tracking-widest">
-                  Caught
-                </div>
-              </div>
-            </div>
-
-            {caughtCount === 0 ? (
-              <div className="text-center py-20 bg-slate-800/50 rounded-xl border border-dashed border-slate-700">
-                <Book size={48} className="mx-auto text-slate-600 mb-4" />
-                <p className="text-slate-400">Your roster is empty.</p>
-                <button
-                  onClick={() => setView("pokedex")}
-                  className="mt-4 text-indigo-400 hover:text-indigo-300 font-bold"
-                >
-                  Go to Pokedex to add Pokemon
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
-                {Object.entries(roster).map(([name, data]) => {
-                  if (!data) return null; // Shouldn't happen given filter but safety check
-                  // Handle legacy data structure if user saved boolean only vs object
-                  const isBool = typeof data === "boolean";
-                  if (isBool && !data) return null;
-
-                  // Filter out legacy bools for now to prevent crash or show placeholder
-                  if (isBool) return null;
-                  if (!data.caught) return null;
-
-                  return (
-                    <div
-                      key={name}
-                      className="bg-slate-800 p-3 rounded-lg border border-slate-700 flex flex-col items-center gap-2 group relative"
-                    >
-                      <button
-                        onClick={() => toggleRoster(name, data.sprite)}
-                        className="absolute top-1 right-1 text-slate-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X size={14} />
-                      </button>
-                      <img
-                        src={data.sprite}
-                        alt={name}
-                        className="w-16 h-16 object-contain pixelated"
-                      />
-                      <span className="text-xs font-medium capitalize text-slate-300 truncate w-full text-center">
-                        {name}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        );
-      };
-
-      const App = () => {
-        const [user, setUser] = useState(null);
-        const [view, setView] = useState("pokedex"); // pokedex, trainers, teams, roster, guide
-        const [db, setDb] = useState(null);
-
-        // User Data State
-        const [roster, setRoster] = useState({}); // { pokemonName: boolean }
-        const [teams, setTeams] = useState({
-          Kanto: [],
-          Hoenn: [],
-          Sinnoh: [],
-          Unova: [],
-          Johto: [],
-        });
-        const [checklist, setChecklist] = useState({}); // { region_index: boolean }
-
-        // Search State
-        const [searchQuery, setSearchQuery] = useState("");
-        const [searchResult, setSearchResult] = useState(null);
-        const [loading, setLoading] = useState(false);
-        const [error, setError] = useState(null);
-        const [allPokemon, setAllPokemon] = useState([]);
-        const [correctedName, setCorrectedName] = useState(null);
-
-        // Fetch All Pokemon Names for AutoComplete/Fuzzy Search
-        useEffect(() => {
-          fetch("https://pokeapi.co/api/v2/pokemon?limit=2000")
-            .then((res) => res.json())
-            .then((data) => {
-              const names = data.results.map((p) => p.name);
-              setAllPokemon(names);
-            })
-            .catch(console.error);
-        }, []);
-
-        // Init Firebase
-        useEffect(() => {
-          // FIX: Destructure onSnapshot and collection correctly
-          const {
-            initializeApp,
-            getAuth,
-            signInAnonymously,
-            signInWithCustomToken,
-            onAuthStateChanged,
-            getFirestore,
-            onSnapshot,
-            collection,
-            getDoc,
-            doc,
-          } = window.firebaseModules;
-
-          // --- HOSTING CONFIGURATION ---
-          // If running locally or on GitHub Pages, paste your Firebase config below.
-          // You can find this in your Firebase Console -> Project Settings -> General -> Your Apps
-          const firebaseConfig = window.__firebase_config
-            ? JSON.parse(window.__firebase_config)
-            : {
-                apiKey: "AIzaSyCmWxymJAF-ytJuazhxby2N34j5OHt3RDM",
-                authDomain: "pokemmo-companion.firebaseapp.com",
-                projectId: "pokemmo-companion",
-                storageBucket: "pokemmo-companion.firebasestorage.app",
-                messagingSenderId: "100403158518",
-                appId: "1:100403158518:web:fbf8e1fa2ca0bd50717bd7",
-                measurementId: "G-N3MCV6EHX3",
-              };
-
-          const app = initializeApp(firebaseConfig);
-          const auth = getAuth(app);
-          const firestore = getFirestore(app);
-          setDb(firestore);
-
-          const initAuth = async () => {
-            if (typeof window !== "undefined" && window.__initial_auth_token) {
-              await signInWithCustomToken(auth, window.__initial_auth_token);
-            } else {
-              await signInAnonymously(auth);
-            }
-          };
-          initAuth();
-
-          const unsubscribe = onAuthStateChanged(auth, (u) => {
-            if (u) {
-              setUser(u);
-              // Setup Listeners
-              const appId = window.__app_id || "default-app-id";
-
-              // Roster Listener
-              const rosterUnsub = onSnapshot(
-                collection(
-                  firestore,
-                  "artifacts",
-                  appId,
-                  "users",
-                  u.uid,
-                  "roster"
-                ),
-                (snap) => {
-                  const data = {};
-                  snap.forEach((doc) => (data[doc.id] = doc.data().caught));
-                  setRoster(data);
-                },
-                (err) => console.log(err)
-              );
-
-              // Teams Listener
-              const teamsUnsub = onSnapshot(
-                collection(
-                  firestore,
-                  "artifacts",
-                  appId,
-                  "users",
-                  u.uid,
-                  "teams"
-                ),
-                (snap) => {
-                  const data = {
-                    Kanto: [],
-                    Hoenn: [],
-                    Sinnoh: [],
-                    Unova: [],
-                    Johto: [],
-                  };
-                  snap.forEach((doc) => {
-                    data[doc.id] = doc.data().list || [];
-                  });
-                  setTeams(data);
-                },
-                (err) => console.log(err)
-              );
-
-              // Checklist Listener
-              const checkUnsub = onSnapshot(
-                collection(
-                  firestore,
-                  "artifacts",
-                  appId,
-                  "users",
-                  u.uid,
-                  "checklist"
-                ),
-                (snap) => {
-                  const data = {};
-                  snap.forEach((doc) => (data[doc.id] = doc.data().completed));
-                  setChecklist(data);
-                },
-                (err) => console.log(err)
-              );
-
-              return () => {
-                rosterUnsub();
-                teamsUnsub();
-                checkUnsub();
-              };
-            }
-          });
-          return () => unsubscribe();
-        }, []);
-
-        // Handlers
-        const searchPokemon = async (e, overrideName = null) => {
-          if (e) e.preventDefault();
-          let term = overrideName || searchQuery.toLowerCase().trim();
-
-          if (!term) return;
-
-          // Typo Correction Logic
-          setCorrectedName(null);
-          if (allPokemon.length > 0 && !allPokemon.includes(term)) {
-            let closest = null;
-            let minDist = Infinity;
-
-            for (const name of allPokemon) {
-              if (Math.abs(name.length - term.length) > 3) continue;
-
-              const dist = getLevenshteinDistance(term, name);
-              if (dist < minDist) {
-                minDist = dist;
-                closest = name;
-              }
-            }
-
-            if (closest && minDist <= 3) {
-              term = closest;
-              setCorrectedName(closest);
-              setSearchQuery(closest);
-            }
-          }
-
-          setLoading(true);
-          setError(null);
-          try {
-            const res = await fetch(
-              `https://pokeapi.co/api/v2/pokemon/${term}`
             );
-            if (!res.ok) throw new Error("Pokemon not found");
-            const data = await res.json();
-
-            const speciesRes = await fetch(data.species.url);
-            const speciesData = await speciesRes.json();
-
-            const evoRes = await fetch(speciesData.evolution_chain.url);
-            const evoData = await evoRes.json();
-
-            const types = data.types.map((t) => t.type.name);
-            const weaknesses = new Set();
-            types.forEach((t) => {
-              if (TYPE_WEAKNESS[t]) {
-                TYPE_WEAKNESS[t].forEach((w) => weaknesses.add(w));
-              }
-            });
-
-            setSearchResult({
-              ...data,
-              evoChain: evoData,
-              flavorText: speciesData.flavor_text_entries.find(
-                (f) => f.language.name === "en"
-              )?.flavor_text,
-              weaknesses: Array.from(weaknesses),
-            });
-          } catch (err) {
-            setError(err.message);
-            setSearchResult(null);
-          } finally {
-            setLoading(false);
-          }
         };
 
-        const toggleRoster = async (pokemonName, spriteUrl) => {
-          if (!user || !db) return;
-          const { doc, setDoc } = window.firebaseModules;
-          const appId = window.__app_id || "default-app-id";
-          const name = pokemonName.toLowerCase();
-          const newVal = !roster[name];
+        const PokedexView = ({ searchQuery, setSearchQuery, searchPokemon, loading, error, searchResult, roster, toggleRoster, addToTeam, allPokemon, correctedName }) => {
+            const [suggestions, setSuggestions] = useState([]);
+            const [showSuggestions, setShowSuggestions] = useState(false);
+            const wrapperRef = useRef(null);
 
-          setRoster((prev) => ({ ...prev, [name]: newVal }));
+            // Nature calculation
+            const natureSuggestion = useMemo(() => {
+                if (!searchResult) return "";
+                return getRecommendedNatures(searchResult.stats);
+            }, [searchResult]);
 
-          await setDoc(
-            doc(db, "artifacts", appId, "users", user.uid, "roster", name),
-            {
-              caught: newVal,
-              sprite: spriteUrl,
-              name: pokemonName,
-            }
-          );
-        };
+            // Handle outside click to close suggestions
+            useEffect(() => {
+                const handleClickOutside = (event) => {
+                    if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+                        setShowSuggestions(false);
+                    }
+                };
+                document.addEventListener("mousedown", handleClickOutside);
+                return () => document.removeEventListener("mousedown", handleClickOutside);
+            }, [wrapperRef]);
 
-        const addToTeam = async (region, pokemonName, spriteUrl) => {
-          if (!user || !db) return;
-          const { doc, setDoc, getDoc } = window.firebaseModules;
-          const appId = window.__app_id || "default-app-id";
-          const docRef = doc(
-            db,
-            "artifacts",
-            appId,
-            "users",
-            user.uid,
-            "teams",
-            region
-          );
+            const handleInputChange = (e) => {
+                const value = e.target.value;
+                setSearchQuery(value);
+                
+                if (value.length > 1 && allPokemon.length > 0) {
+                    const lowerVal = value.toLowerCase();
+                    // prioritization: startsWith > includes
+                    const exactStarts = [];
+                    const includes = [];
+                    
+                    allPokemon.forEach(name => {
+                        if (name.startsWith(lowerVal)) exactStarts.push(name);
+                        else if (name.includes(lowerVal)) includes.push(name);
+                    });
+                    
+                    setSuggestions([...exactStarts, ...includes].slice(0, 10)); // Limit to 10
+                    setShowSuggestions(true);
+                } else {
+                    setSuggestions([]);
+                    setShowSuggestions(false);
+                }
+            };
 
-          // Optimistic UI update for immediate feedback
-          setTeams((prev) => ({
-            ...prev,
-            [region]: [
-              ...(prev[region] || []),
-              { name: pokemonName, sprite: spriteUrl, id: Date.now() },
-            ],
-          }));
+            const selectSuggestion = (name) => {
+                setSearchQuery(name);
+                setShowSuggestions(false);
+                searchPokemon(null, name); 
+            };
 
-          try {
-            // Safe Read-Modify-Write
-            const snap = await getDoc(docRef);
-            const currentList = snap.exists() ? snap.data().list || [] : [];
+            return (
+                <div className="space-y-6">
+                    <div className="relative" ref={wrapperRef}>
+                        <form onSubmit={(e) => searchPokemon(e)} className="flex gap-2">
+                            <input 
+                                type="text" 
+                                value={searchQuery}
+                                onChange={handleInputChange}
+                                onFocus={() => searchQuery.length > 1 && setShowSuggestions(true)}
+                                placeholder="Enter Pokemon Name (e.g., Garchomp)"
+                                className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 text-lg relative z-10"
+                                autoComplete="off"
+                            />
+                            <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 px-6 py-3 rounded-lg font-bold relative z-10">
+                                Search
+                            </button>
+                        </form>
+                        
+                        {/* Autocomplete Dropdown */}
+                        {showSuggestions && suggestions.length > 0 && (
+                            <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto">
+                                {suggestions.map(name => (
+                                    <button
+                                        key={name}
+                                        onClick={() => selectSuggestion(name)}
+                                        className="w-full text-left px-4 py-2 hover:bg-slate-700 text-slate-300 capitalize border-b border-slate-700/50 last:border-0"
+                                    >
+                                        {name}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
 
-            if (currentList.length >= 6) {
-              // Revert optimistic update if full on server
-              alert("Team full! (Server check)");
-              // We rely on the snapshot listener to revert the UI automatically
-              return;
-            }
+                    {loading && <div className="text-center py-10 animate-pulse text-indigo-400">Loading Pokedex Data...</div>}
+                    {error && <div className="text-center py-10 text-red-400 font-bold">{error}</div>}
+                    
+                    {/* Typo Correction Notification */}
+                    {correctedName && !loading && !error && (
+                        <div className="bg-yellow-500/10 border border-yellow-500/50 text-yellow-200 px-4 py-2 rounded-lg text-sm text-center">
+                            Auto-corrected to <span className="font-bold capitalize">{correctedName}</span>
+                        </div>
+                    )}
 
-            const newList = [
-              ...currentList,
-              { name: pokemonName, sprite: spriteUrl, id: Date.now() },
-            ];
+                    {searchResult && (
+                        <div className="bg-slate-800 rounded-xl overflow-hidden border border-slate-700 shadow-2xl">
+                            {/* Header */}
+                            <div className="bg-slate-900 p-6 flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-3xl font-bold capitalize text-white">{searchResult.name}</h2>
+                                    <div className="flex gap-2 mt-2">
+                                        {searchResult.types.map(t => (
+                                            <span key={t.type.name} className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider type-${t.type.name}`}>
+                                                {t.type.name}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="text-slate-400 text-right mono text-sm">
+                                    #{String(searchResult.id).padStart(3, '0')}<br/>
+                                    Ht: {searchResult.height/10}m | Wt: {searchResult.weight/10}kg
+                                </div>
+                            </div>
 
-            await setDoc(docRef, { list: newList });
-          } catch (e) {
-            console.error("Error saving team:", e);
-            alert("Failed to save to team.");
-          }
-        };
+                            <div className="grid md:grid-cols-2 gap-0">
+                                {/* Left: Sprite & Actions */}
+                                <div className="p-8 flex flex-col items-center justify-center bg-slate-800/50 border-r border-slate-700">
+                                    <img 
+                                        src={searchResult.sprites.other['official-artwork'].front_default || searchResult.sprites.front_default} 
+                                        alt={searchResult.name}
+                                        className="w-48 h-48 object-contain drop-shadow-lg"
+                                    />
+                                    <div className="mt-6 flex gap-3 w-full max-w-xs">
+                                        <button 
+                                            onClick={() => toggleRoster(searchResult.name, searchResult.sprites.front_default)}
+                                            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg font-bold transition-all ${roster[searchResult.name] ? 'bg-green-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
+                                        >
+                                            {roster[searchResult.name] ? <CheckSquare size={18} /> : <Plus size={18} />}
+                                            {roster[searchResult.name] ? 'Caught' : 'Roster'}
+                                        </button>
+                                        <a 
+                                            href={`https://pokemmo.shoutwiki.com/wiki/${searchResult.name}`} 
+                                            target="_blank"
+                                            className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold"
+                                        >
+                                            <ExternalLink size={18} /> Wiki
+                                        </a>
+                                    </div>
+                                    <div className="mt-4 grid grid-cols-5 gap-1 w-full max-w-xs">
+                                        {REGIONS.map(r => (
+                                            <button 
+                                                key={r} 
+                                                onClick={() => addToTeam(r, searchResult.name, searchResult.sprites.front_default)}
+                                                className="bg-slate-700 hover:bg-indigo-600 text-[10px] py-1 rounded text-center truncate"
+                                                title={`Add to ${r} Team`}
+                                            >
+                                                +{r[0]}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
 
-        const removeFromTeam = async (region, memberId) => {
-          if (!user || !db) return;
-          const { doc, setDoc, getDoc } = window.firebaseModules;
-          const appId = window.__app_id || "default-app-id";
-          const docRef = doc(
-            db,
-            "artifacts",
-            appId,
-            "users",
-            user.uid,
-            "teams",
-            region
-          );
+                                {/* Right: Stats & Info */}
+                                <div className="p-6 space-y-6">
+                                    {/* Stats */}
+                                    <div>
+                                        <h3 className="text-slate-400 uppercase text-xs font-bold tracking-wider mb-3">Base Stats</h3>
+                                        <div className="space-y-2">
+                                            {searchResult.stats.map(s => (
+                                                <div key={s.stat.name} className="flex items-center text-sm">
+                                                    <span className="w-24 capitalize text-slate-300 truncate">{s.stat.name.replace('-',' ')}</span>
+                                                    <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+                                                        <div 
+                                                            className="h-full bg-indigo-500" 
+                                                            style={{width: `${Math.min(100, (s.base_stat/255)*100)}%`}}
+                                                        ></div>
+                                                    </div>
+                                                    <span className="w-10 text-right mono font-bold">{s.base_stat}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
 
-          // Optimistic UI
-          setTeams((prev) => ({
-            ...prev,
-            [region]: prev[region].filter((m) => m.id !== memberId),
-          }));
+                                    {/* Nature Recommendation - ADDED HERE */}
+                                    <div className="bg-indigo-900/30 border border-indigo-500/30 p-3 rounded-lg">
+                                        <h3 className="text-indigo-400 uppercase text-xs font-bold tracking-wider mb-1">Recommended Natures</h3>
+                                        <p className="text-sm font-mono text-white">{natureSuggestion}</p>
+                                    </div>
+                                    
+                                    {/* Weaknesses */}
+                                    <div>
+                                        <h3 className="text-slate-400 uppercase text-xs font-bold tracking-wider mb-2">Weak To</h3>
+                                        <div className="flex flex-wrap gap-2">
+                                            {searchResult.weaknesses && searchResult.weaknesses.map(w => (
+                                                <span key={w} className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider type-${w}`}>
+                                                    {w}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
 
-          try {
-            const snap = await getDoc(docRef);
-            if (snap.exists()) {
-              const currentList = snap.data().list || [];
-              const newList = currentList.filter((m) => m.id !== memberId);
-              await setDoc(docRef, { list: newList });
-            }
-          } catch (e) {
-            console.error("Error removing from team:", e);
-          }
-        };
+                                    {/* Evolution */}
+                                    <div>
+                                        <h3 className="text-slate-400 uppercase text-xs font-bold tracking-wider mb-2">Evolution</h3>
+                                        <div className="flex flex-wrap gap-2 text-sm text-slate-300">
+                                            {getEvoString(searchResult.evoChain).map((name, i) => (
+                                                <span key={name} className="flex items-center">
+                                                    {i > 0 && <span className="mx-2 text-slate-500">→</span>}
+                                                    <span className={`capitalize ${name === searchResult.name ? 'text-indigo-400 font-bold' : ''}`}>{name}</span>
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
 
-        const toggleChecklist = async (key) => {
-          if (!user || !db) return;
-          const { doc, setDoc } = window.firebaseModules;
-          const appId = window.__app_id || "default-app-id";
-
-          const newVal = !checklist[key];
-          setChecklist((prev) => ({ ...prev, [key]: newVal }));
-
-          await setDoc(
-            doc(db, "artifacts", appId, "users", user.uid, "checklist", key),
-            {
-              completed: newVal,
-            }
-          );
-        };
-
-        return (
-          <div className="min-h-screen bg-slate-950 pb-20 md:pb-0">
-            {/* Desktop Sidebar / Mobile Bottom Nav */}
-            <nav className="fixed md:left-0 md:top-0 md:h-full w-full md:w-20 bg-slate-900 border-r border-slate-800 z-50 bottom-0 md:bottom-auto border-t md:border-t-0 flex md:flex-col justify-around md:justify-start items-center p-2 md:py-6 gap-1 md:gap-6">
-              <div className="hidden md:block mb-6 p-2 bg-indigo-600 rounded-lg">
-                <img
-                  src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"
-                  className="w-6 h-6 invert brightness-0"
-                />
-              </div>
-
-              {[
-                { id: "pokedex", icon: Search, label: "Dex" },
-                { id: "trainers", icon: Shield, label: "Gyms" },
-                { id: "teams", icon: User, label: "Teams" },
-                { id: "roster", icon: Save, label: "Roster" },
-                { id: "guide", icon: MapIcon, label: "Guide" },
-              ].map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => setView(item.id)}
-                  className={`p-3 rounded-xl flex flex-col items-center gap-1 transition-all ${
-                    view === item.id
-                      ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30"
-                      : "text-slate-500 hover:bg-slate-800 hover:text-indigo-400"
-                  }`}
-                >
-                  <item.icon size={24} />
-                  <span className="text-[10px] font-bold md:hidden">
-                    {item.label}
-                  </span>
-                </button>
-              ))}
-
-              {/* User ID Indicator for Debugging Data Wipes */}
-              <div className="hidden md:flex flex-col items-center mt-auto text-[8px] text-slate-600 text-center font-mono">
-                <span>UID:</span>
-                <span>{user ? user.uid.slice(0, 4) : "..."}</span>
-              </div>
-            </nav>
-
-            {/* Main Content */}
-            <main className="md:ml-20 p-4 md:p-8 max-w-7xl mx-auto">
-              <header className="mb-8 flex justify-between items-center">
-                <div>
-                  <h1 className="text-3xl font-black text-white tracking-tight">
-                    PokeMMO<span className="text-indigo-500">Companion</span>
-                  </h1>
-                  <p className="text-slate-400 text-sm mt-1 hidden md:block">
-                    Region Tracking • Team Planning • Living Dex
-                  </p>
+                                    <div>
+                                        <h3 className="text-slate-400 uppercase text-xs font-bold tracking-wider mb-1">PokeMMO Note</h3>
+                                        <p className="text-xs text-slate-400 leading-relaxed">
+                                            Moves and Locations in PokeMMO may differ from base games. Check the Wiki link for specific Route data and Horde encounters.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
-                <div className="flex items-center gap-2 text-xs font-mono text-slate-500 bg-slate-900 px-3 py-1.5 rounded-full border border-slate-800">
-                  <div
-                    className={`w-2 h-2 rounded-full ${
-                      user ? "bg-green-500" : "bg-red-500 animate-pulse"
-                    }`}
-                  ></div>
-                  {user ? "SYNCED" : "OFFLINE"}
-                </div>
-              </header>
+            );
+        };
 
-              {view === "pokedex" && (
-                <PokedexView
-                  searchQuery={searchQuery}
-                  setSearchQuery={setSearchQuery}
-                  searchPokemon={searchPokemon}
-                  loading={loading}
-                  error={error}
-                  searchResult={searchResult}
-                  roster={roster}
-                  toggleRoster={toggleRoster}
-                  addToTeam={addToTeam}
-                  allPokemon={allPokemon}
-                  correctedName={correctedName}
-                />
-              )}
-              {view === "trainers" && <TrainerView />}
-              {view === "teams" && (
-                <TeamView teams={teams} removeFromTeam={removeFromTeam} />
-              )}
-              {view === "roster" && (
-                <RosterView
-                  roster={roster}
-                  toggleRoster={toggleRoster}
-                  setView={setView}
-                />
-              )}
-              {view === "guide" && (
-                <GuideView
-                  checklist={checklist}
-                  toggleChecklist={toggleChecklist}
-                />
-              )}
-            </main>
-          </div>
+        const TrainerView = () => {
+            const [selectedRegion, setSelectedRegion] = useState('Kanto');
+            
+            return (
+                <div className="space-y-6">
+                    <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide">
+                        {REGIONS.map(r => (
+                            <button
+                                key={r}
+                                onClick={() => setSelectedRegion(r)}
+                                className={`px-6 py-2 rounded-full font-bold whitespace-nowrap transition-colors ${selectedRegion === r ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}
+                            >
+                                {r}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                        {GYM_DATA[selectedRegion].map((gym, idx) => (
+                            <div key={idx} className="bg-slate-800 border border-slate-700 rounded-lg p-5 hover:border-indigo-500/50 transition-colors">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 className="text-lg font-bold text-white">{gym.name}</h3>
+                                        <div className="text-xs text-slate-400 uppercase tracking-wider">{gym.badge} Badge</div>
+                                    </div>
+                                    <div className={`px-2 py-1 rounded text-xs font-bold uppercase type-${gym.type.toLowerCase()}`}>
+                                        {gym.type}
+                                    </div>
+                                </div>
+                                
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-2 text-sm text-yellow-400 font-mono bg-yellow-400/10 px-3 py-1.5 rounded">
+                                        <Shield size={14} />
+                                        <span>Level Cap: {gym.cap}</span>
+                                    </div>
+                                    
+                                    <div>
+                                        <p className="text-xs text-slate-500 uppercase font-bold mb-2">Ace Pokemon</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {gym.team.map((poke, i) => (
+                                                <span key={i} className="text-sm bg-slate-900 px-2 py-1 rounded text-slate-300">
+                                                    {poke}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <details className="group">
+                                        <summary className="flex items-center gap-2 cursor-pointer text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors list-none select-none">
+                                            <div className="bg-slate-900 p-1 rounded group-open:rotate-90 transition-transform">
+                                                <Swords size={12} />
+                                            </div>
+                                            Battle Tips & Strategy
+                                        </summary>
+                                        <div className="mt-3 text-sm text-slate-300 bg-slate-900/50 p-3 rounded border border-slate-700 space-y-3">
+                                            <p className="leading-relaxed"><span className="text-indigo-400 font-bold">Strategy:</span> {gym.strategy}</p>
+                                            <div>
+                                                <span className="text-green-400 font-bold text-xs uppercase tracking-wider">Recommended</span>
+                                                <div className="flex flex-wrap gap-2 mt-1">
+                                                    {gym.recommended.map((rec, i) => (
+                                                        <span key={i} className="bg-slate-800 border border-slate-600 px-2 py-1 rounded text-xs text-slate-300">
+                                                            {rec}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </details>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const TeamView = ({ teams, removeFromTeam }) => (
+            <div className="space-y-8">
+                <div className="bg-indigo-900/30 border border-indigo-500/30 p-4 rounded-lg flex items-start gap-3">
+                    <Info className="text-indigo-400 flex-shrink-0 mt-0.5" size={20} />
+                    <p className="text-sm text-indigo-200">
+                        Build your dream team for each region! Search for Pokemon in the Pokedex tab and click "+K", "+H", etc. to add them here.
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                    {REGIONS.map(region => (
+                        <div key={region} className="bg-slate-800 rounded-xl border border-slate-700 flex flex-col">
+                            <div className="p-4 border-b border-slate-700 bg-slate-900/50 rounded-t-xl">
+                                <h3 className="font-bold text-center text-indigo-300">{region} Team</h3>
+                                <p className="text-center text-xs text-slate-500 mt-1">{teams[region]?.length || 0} / 6</p>
+                            </div>
+                            <div className="p-2 space-y-2 flex-1">
+                                {(teams[region] || []).map(member => (
+                                    <div key={member.id} className="flex items-center gap-3 bg-slate-700/50 p-2 rounded-lg group">
+                                        <img src={member.sprite} alt={member.name} className="w-10 h-10 pixelated" />
+                                        <span className="flex-1 text-sm font-medium capitalize truncate">{member.name}</span>
+                                        <button 
+                                            onClick={() => removeFromTeam(region, member.id)}
+                                            className="text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                    </div>
+                                ))}
+                                {(!teams[region] || teams[region].length === 0) && (
+                                    <div className="h-32 flex flex-col items-center justify-center text-slate-600 text-xs italic border-2 border-dashed border-slate-700 rounded-lg m-2">
+                                        <span>Empty Slots</span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
         );
-      };
 
-      const root = ReactDOM.createRoot(document.getElementById("root"));
-      root.render(<App />);
+        const GuideView = ({ checklist, toggleChecklist }) => {
+            const [openRegion, setOpenRegion] = useState(null);
+
+            const progress = useMemo(() => {
+                const stats = {};
+                REGIONS.forEach(r => {
+                    const total = STORY_CHECKLISTS[r].length;
+                    const done = STORY_CHECKLISTS[r].filter((_, i) => checklist[`${r}_${i}`]).length;
+                    stats[r] = Math.round((done / total) * 100);
+                });
+                return stats;
+            }, [checklist]);
+
+            return (
+                <div className="max-w-3xl mx-auto space-y-4">
+                    {REGIONS.map(region => (
+                        <div key={region} className="bg-slate-800 rounded-lg overflow-hidden border border-slate-700">
+                            <button 
+                                onClick={() => setOpenRegion(openRegion === region ? null : region)}
+                                className="w-full flex items-center justify-between p-5 hover:bg-slate-700 transition-colors"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold bg-slate-900 border-2 ${progress[region] === 100 ? 'border-green-500 text-green-500' : 'border-indigo-500 text-indigo-500'}`}>
+                                        {region[0]}
+                                    </div>
+                                    <div className="text-left">
+                                        <h3 className="text-lg font-bold">{region} Story</h3>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <div className="w-24 h-1.5 bg-slate-900 rounded-full overflow-hidden">
+                                                <div className="h-full bg-green-500 transition-all duration-500" style={{width: `${progress[region]}%`}}></div>
+                                            </div>
+                                            <span className="text-xs text-slate-400">{progress[region]}% Complete</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                {openRegion === region ? <ChevronUp className="text-slate-400"/> : <ChevronDown className="text-slate-400"/>}
+                            </button>
+                            
+                            {openRegion === region && (
+                                <div className="bg-slate-900/50 border-t border-slate-700 p-4">
+                                    <div className="space-y-1">
+                                        {STORY_CHECKLISTS[region].map((step, idx) => {
+                                            const key = `${region}_${idx}`;
+                                            return (
+                                                <label key={idx} className="flex items-start gap-3 p-3 hover:bg-slate-800 rounded cursor-pointer transition-colors group">
+                                                    <div 
+                                                        onClick={() => toggleChecklist(key)}
+                                                        className={`mt-0.5 w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${checklist[key] ? 'bg-green-600 border-green-600' : 'border-slate-600 group-hover:border-slate-400'}`}
+                                                    >
+                                                        {checklist[key] && <CheckSquare size={14} className="text-white" />}
+                                                    </div>
+                                                    <span className={`text-sm select-none ${checklist[key] ? 'text-slate-500 line-through' : 'text-slate-200'}`}>
+                                                        {step}
+                                                    </span>
+                                                </label>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            );
+        };
+
+        const RosterView = ({ roster, toggleRoster, setView }) => {
+            const caughtList = Object.entries(roster).filter(([_, caught]) => caught);
+            const caughtCount = caughtList.length;
+
+            return (
+                <div className="space-y-6">
+                    <div className="flex items-center justify-between bg-slate-800 p-6 rounded-xl border border-slate-700">
+                        <div>
+                            <h2 className="text-2xl font-bold text-white">Living Dex Tracker</h2>
+                            <p className="text-slate-400 mt-1">Track your caught unique species across all regions.</p>
+                        </div>
+                        <div className="text-right">
+                            <div className="text-4xl font-bold text-indigo-400 mono">{caughtCount}</div>
+                            <div className="text-xs text-slate-500 uppercase tracking-widest">Caught</div>
+                        </div>
+                    </div>
+
+                    {caughtCount === 0 ? (
+                        <div className="text-center py-20 bg-slate-800/50 rounded-xl border border-dashed border-slate-700">
+                            <Book size={48} className="mx-auto text-slate-600 mb-4" />
+                            <p className="text-slate-400">Your roster is empty.</p>
+                            <button onClick={() => setView('pokedex')} className="mt-4 text-indigo-400 hover:text-indigo-300 font-bold">Go to Pokedex to add Pokemon</button>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+                            {Object.entries(roster).map(([name, data]) => {
+                                if (!data) return null; // Shouldn't happen given filter but safety check
+                                // Handle legacy data structure if user saved boolean only vs object
+                                const isBool = typeof data === 'boolean';
+                                if (isBool && !data) return null;
+                                
+                                // Filter out legacy bools for now to prevent crash or show placeholder
+                                if (isBool) return null;
+                                if (!data.caught) return null;
+
+                                return (
+                                    <div key={name} className="bg-slate-800 p-3 rounded-lg border border-slate-700 flex flex-col items-center gap-2 group relative">
+                                        <button 
+                                            onClick={() => toggleRoster(name, data.sprite)}
+                                            className="absolute top-1 right-1 text-slate-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <X size={14} />
+                                        </button>
+                                        <img src={data.sprite} alt={name} className="w-16 h-16 object-contain pixelated" />
+                                        <span className="text-xs font-medium capitalize text-slate-300 truncate w-full text-center">{name}</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [user, setUser] = useState(null);
+            const [view, setView] = useState('pokedex'); // pokedex, trainers, teams, roster, guide
+            const [db, setDb] = useState(null);
+            
+            // User Data State
+            const [roster, setRoster] = useState({}); // { pokemonName: boolean }
+            const [teams, setTeams] = useState({ Kanto: [], Hoenn: [], Sinnoh: [], Unova: [], Johto: [] }); 
+            const [checklist, setChecklist] = useState({}); // { region_index: boolean }
+            
+            // Search State
+            const [searchQuery, setSearchQuery] = useState('');
+            const [searchResult, setSearchResult] = useState(null);
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState(null);
+            const [allPokemon, setAllPokemon] = useState([]);
+            const [correctedName, setCorrectedName] = useState(null);
+
+            // Fetch All Pokemon Names for AutoComplete/Fuzzy Search
+            useEffect(() => {
+                fetch('https://pokeapi.co/api/v2/pokemon?limit=2000')
+                    .then(res => res.json())
+                    .then(data => {
+                        const names = data.results.map(p => p.name);
+                        setAllPokemon(names);
+                    })
+                    .catch(console.error);
+            }, []);
+
+            // Init Firebase
+            useEffect(() => {
+                // FIX: Destructure onSnapshot and collection correctly
+                const { initializeApp, getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, getFirestore, onSnapshot, collection, getDoc, doc } = window.firebaseModules;
+                
+                // --- HOSTING CONFIGURATION ---
+                // If running locally or on GitHub Pages, paste your Firebase config below.
+                // You can find this in your Firebase Console -> Project Settings -> General -> Your Apps
+                const firebaseConfig = window.__firebase_config
+                  ?  JSON.parse(window.__firebase_config)
+                  : {
+                      apiKey: "AIzaSyCmWxymJAF-ytJuazhxby2N34j5OHt3RDM",
+                      authDomain: "pokemmo-companion.firebaseapp.com",
+                      projectId: "pokemmo-companion",
+                      storageBucket: "pokemmo-companion.firebasestorage.app",
+                      messagingSenderId: "100403158518",
+                      appId: "1:100403158518:web:fbf8e1fa2ca0bd50717bd7",
+                      measurementId: "G-N3MCV6EHX3",
+                    };
+
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                const firestore = getFirestore(app);
+                setDb(firestore);
+
+                const initAuth = async () => {
+                    if (typeof window !== 'undefined' && window.__initial_auth_token) {
+                        await signInWithCustomToken(auth, window.__initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                };
+                initAuth();
+
+                const unsubscribe = onAuthStateChanged(auth, (u) => {
+                    if (u) {
+                        setUser(u);
+                        // Setup Listeners
+                        const appId = window.__app_id || 'default-app-id';
+                        
+                        // Roster Listener
+                        const rosterUnsub = onSnapshot(collection(firestore, 'artifacts', appId, 'users', u.uid, 'roster'), (snap) => {
+                            const data = {};
+                            snap.forEach(doc => data[doc.id] = doc.data().caught);
+                            setRoster(data);
+                        }, (err) => console.log(err));
+
+                        // Teams Listener
+                        const teamsUnsub = onSnapshot(collection(firestore, 'artifacts', appId, 'users', u.uid, 'teams'), (snap) => {
+                            const data = { Kanto: [], Hoenn: [], Sinnoh: [], Unova: [], Johto: [] };
+                            snap.forEach(doc => {
+                                data[doc.id] = doc.data().list || [];
+                            });
+                            setTeams(data);
+                        }, (err) => console.log(err));
+
+                         // Checklist Listener
+                         const checkUnsub = onSnapshot(collection(firestore, 'artifacts', appId, 'users', u.uid, 'checklist'), (snap) => {
+                            const data = {};
+                            snap.forEach(doc => data[doc.id] = doc.data().completed);
+                            setChecklist(data);
+                        }, (err) => console.log(err));
+
+                        return () => { rosterUnsub(); teamsUnsub(); checkUnsub(); };
+                    }
+                });
+                return () => unsubscribe();
+            }, []);
+
+            // Handlers
+            const searchPokemon = async (e, overrideName = null) => {
+                if(e) e.preventDefault();
+                let term = overrideName || searchQuery.toLowerCase().trim();
+                
+                if (!term) return;
+                
+                // Typo Correction Logic
+                setCorrectedName(null);
+                if (allPokemon.length > 0 && !allPokemon.includes(term)) {
+                    let closest = null;
+                    let minDist = Infinity;
+                    
+                    for (const name of allPokemon) {
+                        if (Math.abs(name.length - term.length) > 3) continue;
+                        
+                        const dist = getLevenshteinDistance(term, name);
+                        if (dist < minDist) {
+                            minDist = dist;
+                            closest = name;
+                        }
+                    }
+
+                    if (closest && minDist <= 3) {
+                        term = closest;
+                        setCorrectedName(closest);
+                        setSearchQuery(closest);
+                    }
+                }
+
+                setLoading(true);
+                setError(null);
+                try {
+                    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${term}`);
+                    if (!res.ok) throw new Error('Pokemon not found');
+                    const data = await res.json();
+                    
+                    const speciesRes = await fetch(data.species.url);
+                    const speciesData = await speciesRes.json();
+                    
+                    const evoRes = await fetch(speciesData.evolution_chain.url);
+                    const evoData = await evoRes.json();
+                    
+                    const types = data.types.map(t => t.type.name);
+                    const weaknesses = new Set();
+                    types.forEach(t => {
+                        if(TYPE_WEAKNESS[t]) {
+                            TYPE_WEAKNESS[t].forEach(w => weaknesses.add(w));
+                        }
+                    });
+
+                    setSearchResult({ 
+                        ...data, 
+                        evoChain: evoData, 
+                        flavorText: speciesData.flavor_text_entries.find(f => f.language.name === 'en')?.flavor_text,
+                        weaknesses: Array.from(weaknesses)
+                    });
+                } catch (err) {
+                    setError(err.message);
+                    setSearchResult(null);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const toggleRoster = async (pokemonName, spriteUrl) => {
+                if (!user || !db) return;
+                const { doc, setDoc } = window.firebaseModules;
+                const appId = window.__app_id || 'default-app-id';
+                const name = pokemonName.toLowerCase();
+                const newVal = !roster[name];
+                
+                setRoster(prev => ({...prev, [name]: newVal}));
+
+                await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'roster', name), {
+                    caught: newVal,
+                    sprite: spriteUrl,
+                    name: pokemonName
+                });
+            };
+
+            const addToTeam = async (region, pokemonName, spriteUrl) => {
+                if (!user || !db) return;
+                const { doc, setDoc, getDoc } = window.firebaseModules;
+                const appId = window.__app_id || 'default-app-id';
+                const docRef = doc(db, 'artifacts', appId, 'users', user.uid, 'teams', region);
+                
+                // Optimistic UI update for immediate feedback
+                setTeams(prev => ({
+                    ...prev, 
+                    [region]: [...(prev[region] || []), { name: pokemonName, sprite: spriteUrl, id: Date.now() }]
+                }));
+
+                try {
+                    // Safe Read-Modify-Write
+                    const snap = await getDoc(docRef);
+                    const currentList = snap.exists() ? (snap.data().list || []) : [];
+                    
+                    if (currentList.length >= 6) {
+                        // Revert optimistic update if full on server
+                        alert("Team full! (Server check)");
+                        // We rely on the snapshot listener to revert the UI automatically
+                        return;
+                    }
+
+                    const newList = [...currentList, { name: pokemonName, sprite: spriteUrl, id: Date.now() }];
+                    
+                    await setDoc(docRef, { list: newList });
+                } catch (e) {
+                    console.error("Error saving team:", e);
+                    alert("Failed to save to team.");
+                }
+            };
+
+            const removeFromTeam = async (region, memberId) => {
+                if (!user || !db) return;
+                const { doc, setDoc, getDoc } = window.firebaseModules;
+                const appId = window.__app_id || 'default-app-id';
+                const docRef = doc(db, 'artifacts', appId, 'users', user.uid, 'teams', region);
+
+                // Optimistic UI
+                setTeams(prev => ({
+                    ...prev,
+                    [region]: prev[region].filter(m => m.id !== memberId)
+                }));
+                
+                try {
+                    const snap = await getDoc(docRef);
+                    if (snap.exists()) {
+                        const currentList = snap.data().list || [];
+                        const newList = currentList.filter(m => m.id !== memberId);
+                        await setDoc(docRef, { list: newList });
+                    }
+                } catch (e) {
+                    console.error("Error removing from team:", e);
+                }
+            };
+
+            const toggleChecklist = async (key) => {
+                if (!user || !db) return;
+                const { doc, setDoc } = window.firebaseModules;
+                const appId = window.__app_id || 'default-app-id';
+                
+                const newVal = !checklist[key];
+                setChecklist(prev => ({...prev, [key]: newVal}));
+
+                await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'checklist', key), {
+                    completed: newVal
+                });
+            };
+
+            return (
+                <div className="min-h-screen bg-slate-950 pb-20 md:pb-0">
+                    {/* Desktop Sidebar / Mobile Bottom Nav */}
+                    <nav className="fixed md:left-0 md:top-0 md:h-full w-full md:w-20 bg-slate-900 border-r border-slate-800 z-50 bottom-0 md:bottom-auto border-t md:border-t-0 flex md:flex-col justify-around md:justify-start items-center p-2 md:py-6 gap-1 md:gap-6">
+                        <div className="hidden md:block mb-6 p-2 bg-indigo-600 rounded-lg">
+                            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" className="w-6 h-6 invert brightness-0" />
+                        </div>
+                        
+                        {[
+                            { id: 'pokedex', icon: Search, label: 'Dex' },
+                            { id: 'trainers', icon: Shield, label: 'Gyms' },
+                            { id: 'teams', icon: User, label: 'Teams' },
+                            { id: 'types', icon: Grid, label: 'Types' }, // NEW ITEM
+                            { id: 'roster', icon: Save, label: 'Roster' },
+                            { id: 'guide', icon: MapIcon, label: 'Guide' }
+                        ].map(item => (
+                            <button
+                                key={item.id}
+                                onClick={() => setView(item.id)}
+                                className={`p-3 rounded-xl flex flex-col items-center gap-1 transition-all ${view === item.id ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30' : 'text-slate-500 hover:bg-slate-800 hover:text-indigo-400'}`}
+                            >
+                                <item.icon size={24} />
+                                <span className="text-[10px] font-bold md:hidden">{item.label}</span>
+                            </button>
+                        ))}
+
+                        {/* User ID Indicator for Debugging Data Wipes */}
+                        <div className="hidden md:flex flex-col items-center mt-auto text-[8px] text-slate-600 text-center font-mono">
+                            <span>UID:</span>
+                            <span>{user ? user.uid.slice(0, 4) : '...'}</span>
+                        </div>
+                    </nav>
+
+                    {/* Main Content */}
+                    <main className="md:ml-20 p-4 md:p-8 max-w-7xl mx-auto">
+                        <header className="mb-8 flex justify-between items-center">
+                            <div>
+                                <h1 className="text-3xl font-black text-white tracking-tight">PokeMMO<span className="text-indigo-500">Companion</span></h1>
+                                <p className="text-slate-400 text-sm mt-1 hidden md:block">Region Tracking • Team Planning • Living Dex</p>
+                            </div>
+                            <div className="flex items-center gap-2 text-xs font-mono text-slate-500 bg-slate-900 px-3 py-1.5 rounded-full border border-slate-800">
+                                <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500 animate-pulse'}`}></div>
+                                {user ? 'SYNCED' : 'OFFLINE'}
+                            </div>
+                        </header>
+
+                        {view === 'pokedex' && <PokedexView 
+                            searchQuery={searchQuery}
+                            setSearchQuery={setSearchQuery}
+                            searchPokemon={searchPokemon}
+                            loading={loading}
+                            error={error}
+                            searchResult={searchResult}
+                            roster={roster}
+                            toggleRoster={toggleRoster}
+                            addToTeam={addToTeam}
+                            allPokemon={allPokemon}
+                            correctedName={correctedName}
+                        />}
+                        {view === 'trainers' && <TrainerView />}
+                        {view === 'teams' && <TeamView teams={teams} removeFromTeam={removeFromTeam} />}
+                        {view === 'types' && <TypeMatrixView />}
+                        {view === 'roster' && <RosterView roster={roster} toggleRoster={toggleRoster} setView={setView} />}
+                        {view === 'guide' && <GuideView checklist={checklist} toggleChecklist={toggleChecklist} />}
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
-  </body>
+</body>
 </html>
